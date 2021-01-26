@@ -1,0 +1,129 @@
+<div style="margin: 0px;" fxLayout="row">
+   <div fxFlex="100" style="margin: 10px;">
+    <div fxLayout="column">
+      <div class="pageTitle">INVOICE</div>
+      <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+      </div>
+      <div class="pageBody" *ngIf="!ShowLoading">
+
+                <div fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutAlign="space-around center">
+                  <!-- Billing Address - begin -->
+                  <div fxLayout="column">
+                    <div class="pageLabel">My Billing Address</div>
+                    <div class="pageBody">{{shoppingCartDTO.BillingFirstName}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingLastName}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingCompany}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingAddress1}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingAddress2}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingCity}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingZipPostalCode}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingStateProvince}}</div>  
+                    <div class="pageBody">{{shoppingCartDTO.BillingCountry}}</div>  
+                  </div>
+                  <!-- Billing Address - end -->
+
+                  <!-- Shipping Address - begin -->
+                  <div fxLayout="column">
+                    <div class="pageLabel">My Shipping Address</div>
+                    <div *ngIf="!shoppingCartDTO.ShippingSameAsBillingAddress">
+                      <div class="pageBody">{{shoppingCartDTO.ShippingFirstName}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingLastName}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingCompany}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingAddress1}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingAddress2}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingCity}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingZipPostalCode}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingStateProvince}}</div>  
+                      <div class="pageBody">{{shoppingCartDTO.ShippingCountry}}</div> 
+                    </div> 
+                    <div *ngIf="shoppingCartDTO.ShippingSameAsBillingAddress">
+                      Same as Billing Address.
+                    </div>
+                  </div>
+                  <!-- Shipping Address - end -->
+                </div>
+                <div style="margin-top: 5px;">
+                  <b>Order Ref:</b> {{shoppingCartDTO.Id}}
+                </div>
+                <div><b>Order Date:</b> {{shoppingCartDTO.CreatedOnUtc | date:'yyyy-MM-dd'}}</div>
+                <div><b>Payment Method:</b> {{shoppingCartDTO.PaymentMethod}}</div>
+
+                <div style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+                  <div fxFlex="30" class="component-table-title">Product</div>
+                  <div fxFlex="10" class="component-table-title" style="text-align: right;">Qty</div>     
+                  <div fxFlex="10" class="component-table-title" style="text-align: right;">Unite Price</div>       
+                  <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" fxFlex="10" class="component-table-title" style="text-align: right;">Discount</div>    
+                  <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex="10" class="component-table-title" style="text-align: right;">Tax Rate</div>      
+                  <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex="15" class="component-table-title" style="text-align: right;">Sub Total (Excl. Tax)</div>    
+                  <div fxFlex="15" class="component-table-title" style="text-align: right;">Sub Total (Incl. Tax)</div>    
+                </div>
+
+              <div>
+                <div  *ngFor="let item of shoppingCartDTO.Items"  fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+                    <div fxFlex.gt-xs="30" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Product:</b></div>
+                        <div>
+                            {{item.Name}} 
+                        </div>
+                        <div style="font-size: 12px;font-style: italic;" *ngFor="let attributeValue of item.AttributeValues">
+                          {{attributeValue.Name}}: {{attributeValue.Value}} <span *ngIf="attributeValue.PriceAdjustment!=0">[<span *ngIf="attributeValue.PriceAdjustment>0">+</span>{{attributeValue.PriceAdjustment | currency}}]</span>
+                      </div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Qty:</b></div>
+                        <div style="text-align: right;">{{item.Quantity}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Unit Price:</b></div>
+                        <div style="text-align: right;">{{item.UnitPrice | currency}}</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Discount:</b></div>
+                        <div style="text-align: right;">{{item.DiscountAmount | currency}}</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Tax Rate:</b></div>
+                        <div style="text-align: right;">{{item.TaxRate}}%</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex.gt-xs="15" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Excl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) | currency}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="15" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Incl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) * (1 + item.TaxRate / 100) | currency}}</div>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="end end">
+              <div class="pageBody">
+                <b>Total Product(s):</b> 
+                <div style="float: right;">{{shoppingCartDTO.TotalItems | currency}}</div>
+              </div>  
+              <div *ngIf="shoppingCartDTO.TotalTax>0" class="pageBody">
+                  <b>Total Tax:</b> 
+                  <div style="float: right;">{{shoppingCartDTO.TotalTax | currency}}</div>
+              </div>  
+              <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" class="pageBody">
+                  <b>Total Items Discount:</b>
+                  <div style="float: right;">{{shoppingCartDTO.TotalItemsDiscount | currency}}</div>  
+              </div>
+              <div class="pageBody">
+                  <b>Shipping Rate:</b> 
+                  <div style="float: right;">{{shoppingCartDTO.TotalShipping | currency}}</div>  
+              </div>
+              <div *ngIf="shoppingCartDTO.TotalOrderDiscount>0" class="pageBody">
+                <b>Total Order Discount:</b>
+                <div style="float: right;">{{shoppingCartDTO.TotalOrderDiscount | currency}}</div>  
+              </div>
+              <div class="pageBody">
+                  <b>Total to Pay:</b> 
+                  <div style="float: right;">{{shoppingCartDTO.TotalToPay | currency}}</div>  
+              </div>
+            </div>
+
+      </div>
+    </div>
+  </div>
+</div>

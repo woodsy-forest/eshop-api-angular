@@ -1,0 +1,138 @@
+<div fxLayout="column" (click)="MainDivClick()" fxFlexFill style="background-color:#3f51b5;">
+
+    <div fxLayout="row" style="align-items:center;">
+      <button  class="btn" *ngIf="!(screenWidth > breakMedia)" type="button" (click)="sidenavToggle()">
+        <i style="color: white;" class="fa fa-bars"></i>
+      </button>
+      <span id="Title" (click)="TitleDivClick()" *ngIf="!(screenWidth > breakMedia)" style="font-size: 24px;font-weight: bold;color: white;padding:10px;width:100%">eShop Api Demo</span>
+      <span id="Title1" (click)="TitleDivClick()" *ngIf="(screenWidth > breakMedia)" style="font-size: 24px;font-weight: bold;color: white;padding:10px;">eShop Api Demo</span>
+      <div (click)="MenuDivClick()" *ngIf="(screenWidth > breakMedia)">
+        <!-- The following menu items will be hidden on both SM and XS screen sizes -->
+        <div fxLayout="row">
+          <a class="MenuItem" (click)="SelectedMenu()" routerLink="/home" routerLinkActive="link-active">
+            Home Page
+          </a>
+          <div class="dropdown">
+            <button class="dropbtn">Account API</button>
+            <div class="dropdown-content">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/register" routerLinkActive="link-active">
+                Register
+              </a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/email-confirmation-page" routerLinkActive="link-active">
+                Email Confirmation Page
+              </a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/reset-password" routerLinkActive="link-active">
+                Reset Password
+              </a>   
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/reset-password-page" routerLinkActive="link-active">
+                Reset Password Page
+              </a>   
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/change-password" routerLinkActive="link-active">
+                Change Password
+              </a>                
+              <a class="MenuItem" (click)="SelectedMenu()" *ngIf="!IsAuthenticated" routerLink="/account/login" routerLinkActive="link-active">
+                Login
+              </a> 
+              <a class="MenuItem" (click)="SelectedMenu()" *ngIf="IsAuthenticated" routerLink="/account/logoff" routerLinkActive="link-active">
+                Logoff
+              </a>                         
+            </div>
+          </div>
+          <div class="dropdown">
+            <button class="dropbtn">Catalog</button>
+            <div class="dropdown-content">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/category" routerLinkActive="link-active">Category API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/product/list" routerLinkActive="link-active">Product API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/cart" routerLinkActive="link-active">ShoppingCart API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/picture" routerLinkActive="link-active">Picture API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/attribute" routerLinkActive="link-active">Attribute API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/discount" routerLinkActive="link-active">Discount API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/country-province" routerLinkActive="link-active">Country & Province API</a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/setting" routerLinkActive="link-active">Setting API</a> 
+            </div>
+          </div> 
+          <div class="dropdown">
+            <button class="dropbtn">My Account</button>
+            <div class="dropdown-content">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/customer" routerLinkActive="link-active">Customer API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/order" routerLinkActive="link-active">Order API</a> 
+            </div>
+          </div>                     
+        </div>      
+
+      </div>
+      <div *ngIf="sideNavToggled" style="background-color:#69f;left: 0px;position: absolute;
+      padding: 0px;
+      top: 40px;z-index: 9999;">
+        <div fxLayout="column" style="align-items:center;">
+          <div class="sidenav">
+            <a class="MenuItem1" (click)="SelectedMenu()" routerLink="/home" routerLinkActive="link-active">
+              Home Page
+            </a>
+            <button (click)="OpenAccountAPI()" class="dropdown-btn">Account API
+              <i class="fa fa-caret-down"></i>
+            </button>
+            <div *ngIf="ShowAccountAPI==true" class="dropdown-container">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/register" routerLinkActive="link-active">
+                Register
+              </a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/email-confirmation-page" routerLinkActive="link-active">
+                Email Confirmation Page
+              </a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/reset-password" routerLinkActive="link-active">
+                Reset Password
+              </a>   
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/reset-password-page" routerLinkActive="link-active">
+                Reset Password Page
+              </a>   
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/account/change-password" routerLinkActive="link-active">
+                Change Password
+              </a>                
+              <a class="MenuItem" (click)="SelectedMenu()" *ngIf="!IsAuthenticated" routerLink="/account/login" routerLinkActive="link-active">
+                Login
+              </a> 
+              <a class="MenuItem" (click)="SelectedMenu()" *ngIf="IsAuthenticated" routerLink="/account/logoff" routerLinkActive="link-active">
+                Logoff
+              </a> 
+            </div>
+            <button (click)="OpenCatalogAPI()" class="dropdown-btn">Catalog
+              <i class="fa fa-caret-down"></i>
+            </button>
+            <div *ngIf="ShowCatalogAPI==true" class="dropdown-container">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/category" routerLinkActive="link-active">Category API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/product/list" routerLinkActive="link-active">Product API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/cart" routerLinkActive="link-active">ShoppingCart API</a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/picture" routerLinkActive="link-active">Picture API</a>
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/attribute" routerLinkActive="link-active">Attribute API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/discount" routerLinkActive="link-active">Discount API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/country-province" routerLinkActive="link-active">Country & Province API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/setting" routerLinkActive="link-active">Setting API</a> 
+            </div>
+            <button (click)="OpenMyAccount()" class="dropdown-btn">My Account
+              <i class="fa fa-caret-down"></i>
+            </button>
+            <div *ngIf="ShowMyAccount==true" class="dropdown-container">
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/customer" routerLinkActive="link-active">Customer API</a> 
+              <a class="MenuItem" (click)="SelectedMenu()" routerLink="/order" routerLinkActive="link-active">Order API</a> 
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+    <div (click)="WelcomeDivClick()" style="font-size: 15px;color:white;padding:10px" fxLayout="row" fxLayoutAlign="space-between center" fxLayout.xs="column" fxFlexFill>
+      <div *ngIf="IsAuthenticated">
+        {{Welcome}}
+      </div>
+      <div>
+        {{TodayDate  | date:'d MMMM yyyy'}}
+      </div>
+  
+    </div>
+  
+  </div>
+  <div (click)="RouterOutLetClick()">
+    <router-outlet></router-outlet>
+  </div> 
+  <!--<div class="Footer" color="primary">©{{currYear}} - All Rights Reserved</div>-->

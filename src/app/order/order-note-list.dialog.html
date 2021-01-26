@@ -1,0 +1,48 @@
+<div style="height: 300px; overflow-y: auto; overflow-wrap: anywhere;">
+    <div class="loader-block" *ngIf="ShowLoading">
+      <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!ShowLoading">
+      <div class="pageTitle">Notes
+
+        <div style="float: right; margin-right: 1px;"><button class="pageButton" (click)="onAddNew()">Add New</button></div>
+      </div>
+      <div *ngIf="orderDTO.OrderNotes.length>0 && Mode=='List'" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true">
+        <div fxFlex="5" class="component-table-title"></div>    
+        <div fxFlex="20" class="component-table-title">Created Date</div>  
+        <div fxFlex="80" class="component-table-title">Note</div>
+      </div>
+      <div class="pageLabel" style="color: red;" *ngIf="orderDTO.OrderNotes.length==0 && Mode=='List'">
+          No note(s) found.
+      </div>
+      <div *ngIf="orderDTO.OrderNotes.length>0 && Mode=='List'">
+          <div  *ngFor="let note of orderDTO.OrderNotes" fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+              <div fxFlex.gt-xs="5">
+                <a title="Delete Note" style="cursor:pointer; margin: 5px;" (click)="DeleteNote(note)"><i class="fa fa-trash"></i></a>
+              </div>
+              <div fxFlex.gt-xs="15" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Created Date:</b></div>
+                <div>{{note.CreatedOnUtc | date:'yyyy-MM-dd'}}</div>
+              </div>
+              <div fxFlex.gt-xs="80" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Notes:</b></div>
+                <div>{{note.Note}}</div>
+              </div>             
+          </div>
+        </div>  
+    </div>
+    <div *ngIf="!ShowLoading && Mode=='Add'">
+      <div class="pageLabel">New Note:</div>  
+      <div class="pageLabel">
+        <textarea [(ngModel)]="newNote" rows="20"></textarea>
+      </div> 
+      <div style="margin-top: 10px;text-align: center;">
+        <button class="pageButton"  (click)="AddNew()">Add New</button>
+        <button style="margin-left: 5px;" class="pageButton"  (click)="Cancel()">Cancel</button>
+      </div> 
+    </div>
+</div>
+<div *ngIf="!ShowLoading && Mode=='List'" style="margin-top: 10px;text-align: center;">
+  <button cdkFocusInitial class="pageButton"  (click)="onCloseClick()">Close</button>
+</div>
+

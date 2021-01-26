@@ -1,0 +1,71 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    <div>
+        <div class="pageTitle">
+            Attribute Api
+        </div>
+        <div class="pageBody" *ngIf="Mode==''">
+            Search Attributes:
+            <input style="width:200px;"
+            [formControl]="search"
+            (keyup)="InputSearch_valuechange($event)"
+            type="text">
+            <button style="margin: 10px;" class="pageButton" (click)="SelAddAttribute()">Add New Attribute</button>
+        </div>
+        <div class="loader-block" *ngIf="ShowLoading">
+            <app-spinner></app-spinner>
+        </div>
+        <div  *ngIf="!ShowLoading && Mode==''" fxLayout="column" fxFlexFill>
+            <div *ngIf="pagedAttributeDTO.PageResult.RowCount != 0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+              <div fxFlex="20" class="component-table-title"></div>
+              <div fxFlex="30" class="component-table-title">Id</div>
+              <div fxFlex="50" class="component-table-title">Name</div>
+            </div>
+            <div *ngFor="let attribute of pagedAttributeDTO.Attributes" fxLayout="row" fxLayout.xs="column" fxFlexFill>
+                <div fxFlex="20" class="component-table-row">
+                    <a title="Delete Attribute" style="cursor:pointer; margin: 5px;" (click)="DeleteAttribute(attribute)"><i class="fa fa-trash"></i></a>
+                    <a title="Update Attribute" style="cursor:pointer; margin: 5px;" (click)="SelUpdateAttribute(attribute)"><i class="fa fa-pencil"></i></a>      
+                </div>
+               <div fxFlex="30" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Id:</b> {{attribute.Id}}</div>
+                <div fxHide.xs="true">{{attribute.Id}}</div>
+              </div>
+              <div fxFlex="50" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Name:</b> {{attribute.Name}}</div>
+                <div fxHide.xs="true">{{attribute.Name}}</div>
+              </div>
+            </div>
+            <div *ngIf="pagedAttributeDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+                <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+                <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+                Current Page: {{currentPage}} of {{pagedAttributeDTO.PageResult.PageCount}}
+                <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+                <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+            </div>
+        </div>
+        <div style="color: red;" *ngIf="pagedAttributeDTO.PageResult.RowCount == 0">
+            No attribute(s) found.
+        </div>
+
+        <div *ngIf="!ShowLoading" fxLayout="row">
+            <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+            <div fxFlex.xs="100" fxFlex.sm="70" fxFlex.md="50" fxFlex.lg="30" fxFlex.xl="10"  *ngIf="Mode!=''" fxLayout="column">
+                <div class="pageSubTitle">{{PageTitle}}</div>
+                <div *ngIf="selAttributeDTO.Id>0" class="pageLabel">Id: {{selAttributeDTO.Id}}</div>  
+                <div class="pageLabel">Name:</div>  
+                <div class="pageLabel">
+                <input name="Name"
+                        type="text"
+                        [(ngModel)]="selAttributeDTO.Name">
+                </div>  
+                <div style="margin-top: 10px;">
+                    <button *ngIf="Mode=='A'"  class="pageButton" (click)="AddAttribute()">Add New Attribute</button>
+                    <button *ngIf="Mode=='U'"  class="pageButton" (click)="UpdateAttribute()">Update Attribute</button>
+                    <button style="margin-left: 5px;" class="pageButton" (click)="CancelEdit()">Cancel</button>
+                </div>
+            </div>
+            <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+        </div>
+
+
+    </div>
+</div>

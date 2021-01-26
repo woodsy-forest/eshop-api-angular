@@ -1,0 +1,339 @@
+<div fxFlex="100" style="margin: 10px;">
+    <div>
+        <div class="pageTitle">
+          ShoppingCart Api
+        </div>
+    </div>
+    <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+    </div>
+    <div class="pageBody" *ngIf="!ShowLoading">
+        <!-- Shopping Cart / Checkout - begin -->
+        <div *ngIf="Mode=='cart' || Mode=='checkout'">
+            <div class="pageSubTitle">
+                {{PageTitle}} 
+            </div>
+            <div *ngIf="shoppingCartDTO.Items.length>0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+                <div *ngIf="Mode=='cart'" fxFlex="5" class="component-table-title"></div>
+                <div fxFlex="16" class="component-table-title">Image</div>
+                <div fxFlex="10" class="component-table-title">Sku</div>
+                <div fxFlex="20" class="component-table-title">Product</div>
+                <div fxFlex="5" class="component-table-title" style="text-align: right;">Qty</div>     
+                <div fxFlex="10" class="component-table-title" style="text-align: right;">Unite Price</div>       
+                <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" fxFlex="10" class="component-table-title" style="text-align: right;">Discount</div>    
+                <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex="5" class="component-table-title" style="text-align: right;">Tax Rate</div>      
+                <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex="12" class="component-table-title" style="text-align: right;">Sub Total (Excl. Tax)</div>    
+                <div fxFlex="12" class="component-table-title" style="text-align: right;">Sub Total (Incl. Tax)</div>    
+            </div>
+            <div *ngIf="shoppingCartDTO.Items.length>0">
+                <div  *ngFor="let item of shoppingCartDTO.Items"  fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+                    <div *ngIf="Mode=='cart'"  fxFlex.gt-xs="5" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Remove:</b></div>
+                        <div><a title="Remove Item" style="cursor:pointer; margin: 5px;" (click)="RemoveItem(item)"><i class="fa fa-trash"></i></a></div>
+                    </div>
+                    <div fxFlex.gt-xs="16" class="component-table-row">
+                        <div>
+                            <div fxHide.gt-xs="true"><b>Image:</b></div>
+                            <img width="100px" height="100px;" alt="{{item.Picture?.AltAttribute}}" title="{{item.Picture?.TitleAttribute}}" src="{{item.Picture?.FileAsBase64}}" />
+                        </div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sku:</b></div>
+                        <div>{{item.Sku}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="20" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Product:</b></div>
+                        <div>
+                            {{item.Name}}
+                        </div>
+                        <div style="font-size: 12px;font-style: italic;" *ngFor="let attributeValue of item.AttributeValues">
+                            {{attributeValue.Name}}: {{attributeValue.Value}} <span *ngIf="attributeValue.PriceAdjustment!=0">[<span *ngIf="attributeValue.PriceAdjustment>0">+</span>{{attributeValue.PriceAdjustment | currency}}]</span>
+                        </div>
+                    </div>
+                    <div fxFlex.gt-xs="5" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Qty:</b></div>
+                        <div *ngIf="Mode=='cart'" style="text-align: right;">
+                            <input (blur)="changeInputQuantity($event, item)" style="width: 40px; text-align: right;" type="number" [(ngModel)]="item.Quantity">
+                        </div>
+                        <div *ngIf="Mode=='checkout'" style="text-align: right;">
+                            {{item.Quantity}}
+                        </div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Unit Price:</b></div>
+                        <div style="text-align: right;">{{item.UnitPrice | currency}}</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Discount:</b></div>
+                        <div style="text-align: right;">{{item.DiscountAmount | currency}}</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex.gt-xs="5" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Tax Rate:</b></div>
+                        <div style="text-align: right;">{{item.TaxRate}}%</div>
+                    </div>
+                    <div *ngIf="shoppingCartDTO.TotalTax>0" fxFlex.gt-xs="12" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Excl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) | currency}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="12" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Incl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) * (1 + item.TaxRate / 100) | currency}}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div *ngIf="shoppingCartDTO.Items.length>0" fxLayout="row">
+                <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+                <div fxFlex.xs="100" fxFlex.sm="70" fxFlex.md="50" fxFlex.lg="30" fxFlex.xl="10"  fxLayout="column">
+                    
+                    <!-- Billing Address - begin -->
+                    <div *ngIf="Mode=='checkout'" class="pageSubTitle">
+                        My Billing Address
+                        <div style="float: right;">
+                          <a title="Expand" *ngIf="!ShowBillingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayBilligAddress()"><i class="fa fa-plus"></i></a>
+                          <a title="Collapse" *ngIf="ShowBillingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayBilligAddress()"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div *ngIf="ShowBillingAddress && Mode=='checkout'"> 
+                        <div class="pageLabel">Fistname:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingFirstName">
+                        </div>
+                        <div class="pageLabel">Lastname:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingLastName">
+                        </div>
+                        <div class="pageLabel">Company:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingCompany">
+                        </div>
+                        <div class="pageLabel">Address1:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingAddress1">
+                        </div>
+                        <div class="pageLabel">Address2:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingAddress2">
+                        </div>
+                        <div class="pageLabel">City:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingCity">
+                        </div>
+                        <div class="pageLabel">Zip/Postalcode:</div>  
+                        <div class="pageLabel">
+                            <input type="text" [(ngModel)]="customerDTO.BillingZipPostalCode">
+                        </div>
+                        <div class="pageLabel">State/Province:</div>  
+                        <div class="pageLabel" *ngIf="billingStateProvinceDTOs.length>0">
+                            <select 
+                                name="BillingStateProvince"
+                                [(ngModel)]="customerDTO.BillingStateProvinceCode">
+                            <option *ngFor="let billingStateProvinceDTO of billingStateProvinceDTOs" [value]="billingStateProvinceDTO.Abbreviation">
+                                {{billingStateProvinceDTO.Name}}
+                            </option>
+                            </select>
+                        </div>
+                        <div *ngIf="billingStateProvinceDTOs.length==0">
+                            <input type="text" [(ngModel)]="customerDTO.BillingStateProvince">
+                        </div>
+                        <div class="pageLabel">Country:</div>  
+                        <div class="pageLabel">
+                            <select 
+                                (change)="selectBillingCountry()"
+                                [(ngModel)]="customerDTO.BillingCountryCode">
+                            <option *ngFor="let billingCountryDTO of billingCountryDTOs" [value]="billingCountryDTO.TwoLetterIsoCode">
+                                {{billingCountryDTO.Name}}
+                            </option>
+                            </select>
+                        </div> 
+                        <button style="margin-top: 10px;" class="pageButton" (click)="Continue()">Continue</button>           
+                    </div>
+                    <!-- Billing Address - end -->
+
+
+                    <!-- Shipping Address - begin -->
+                    <div *ngIf="Mode=='checkout'" class="pageSubTitle">
+                        My Shipping Address
+                        <div style="float: right;">
+                          <a title="Expand" *ngIf="!ShowShippingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingAddress()"><i class="fa fa-plus"></i></a>
+                          <a title="Collapse" *ngIf="ShowShippingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingAddress()"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div *ngIf="ShowShippingAddress && Mode=='checkout'">
+                        <div class="pageLabel">
+                            <label class="container">Same as Billing Address
+                            <input name="ShippingSameAsBillingAddress"
+                            type="checkbox"
+                            [(ngModel)]="customerDTO.ShippingSameAsBillingAddress">
+                            <span class="checkmark"></span>       
+                            </label>  
+                        </div>
+                        <div *ngIf="!customerDTO.ShippingSameAsBillingAddress">
+                            <div class="pageLabel">Fistname:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingFirstName">
+                            </div>
+                            <div class="pageLabel">Lastname:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingLastName">
+                            </div>
+                            <div class="pageLabel">Company:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingCompany">
+                            </div>
+                            <div class="pageLabel">Address1:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingAddress1">
+                            </div>
+                            <div class="pageLabel">Address2:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingAddress2">
+                            </div>
+                            <div class="pageLabel">City:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingCity">
+                            </div>
+                            <div class="pageLabel">Zip/Postalcode:</div>  
+                            <div class="pageLabel">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingZipPostalCode">
+                            </div>    
+                            <div class="pageLabel">State/Province:</div>  
+                            <div class="pageLabel" *ngIf="shippingStateProvinceDTOs.length>0">
+                                <select 
+                                        [(ngModel)]="customerDTO.ShippingStateProvinceCode">
+                                    <option *ngFor="let shippingStateProvinceDTO of shippingStateProvinceDTOs" [value]="shippingStateProvinceDTO.Abbreviation">
+                                    {{shippingStateProvinceDTO.Name}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div *ngIf="shippingStateProvinceDTOs.length==0">
+                                <input type="text" [(ngModel)]="customerDTO.ShippingStateProvince">
+                            </div>
+                            <div class="pageLabel">Country:</div>  
+                            <div class="pageLabel">
+                                <select 
+                                        (change)="selectShippingCountry()"
+                                        [(ngModel)]="customerDTO.ShippingCountryCode">
+                                    <option *ngFor="let shippingCountryDTO of shippingCountryDTOs" [value]="shippingCountryDTO.TwoLetterIsoCode">
+                                    {{shippingCountryDTO.Name}}
+                                    </option>
+                                </select>
+                            </div>                 
+                        </div>
+                        <button style="margin-top: 10px;" class="pageButton" (click)="Continue()">Continue</button>
+                    </div>
+                    <!-- Shipping Address - end -->
+
+
+                    <!-- Shipping Rates - begin -->
+                    <div *ngIf="Mode=='checkout'" class="pageSubTitle">
+                        Shipping Rates
+                        <div style="float: right;">
+                          <a title="Expand" *ngIf="!ShowShippingRates" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingRates()"><i class="fa fa-plus"></i></a>
+                          <a title="Collapse" *ngIf="ShowShippingRates" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingRates()"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div *ngIf="ShowShippingRates && Mode=='checkout'">
+                        <div class="pageLabel">
+                            <select 
+                                (change)="selectShippingRate()"
+                                [(ngModel)]="selectedShippingRate">
+                                <option value="0">Please select</option>
+                                <option *ngFor="let shippingRateDTO of shippingRateDTOs" [value]="shippingRateDTO.Id">
+                                    {{shippingRateDTO.Name}}
+                                    </option>
+                            </select>
+                        </div>
+                        <button style="margin-top: 10px;" class="pageButton" (click)="Continue()">Continue</button>   
+                    </div>
+                    <!-- Shipping Rates - end -->
+
+
+                    <!-- Payment Method - begin -->
+                    <div *ngIf="Mode=='checkout'" class="pageSubTitle">
+                        Payment Method
+                        <div style="float: right;">
+                          <a title="Expand" *ngIf="!ShowPaymentMethod" style="cursor:pointer; margin: 5px;" (click)="DisplayPaymentMethod()"><i class="fa fa-plus"></i></a>
+                          <a title="Collapse" *ngIf="ShowPaymentMethod" style="cursor:pointer; margin: 5px;" (click)="DisplayPaymentMethod()"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div *ngIf="ShowPaymentMethod && Mode=='checkout'">
+                        <div class="pageLabel">
+                            <select 
+                                (change)="selectPaymentMethod()"
+                                [(ngModel)]="selectedPaymentMethod">
+                                <option value="0">Please select</option>
+                                <option *ngFor="let paymentMethodDTO of paymentMethodDTOs" [value]="paymentMethodDTO.Id">
+                                    {{paymentMethodDTO.Name}}
+                                    </option>
+                            </select>
+                        </div>  
+                        <button style="margin-top: 10px;" class="pageButton" (click)="Continue()">Continue</button>
+                    </div>
+                    <!-- Payment Method - end -->
+
+
+                    <!-- Summary Totals - begin -->
+                    <div class="pageSubTitle">
+                        Total Summary
+                        <div style="float: right;">
+                            <a title="Expand" *ngIf="!ShowTotalSummary && Mode=='checkout'" style="cursor:pointer; margin: 5px;" (click)="DisplayTotalSummary()"><i class="fa fa-plus"></i></a>
+                            <a title="Collapse" *ngIf="ShowTotalSummary && Mode=='checkout'" style="cursor:pointer; margin: 5px;" (click)="DisplayTotalSummary()"><i class="fa fa-minus"></i></a>
+                        </div>
+                    </div>
+                    <div *ngIf="ShowTotalSummary || Mode=='cart'">
+                        <div class="pageBody">
+                            <b>Total Item(s):</b> 
+                            <div style="float: right;">{{shoppingCartDTO.TotalItems | currency}}</div>
+                        </div>  
+                        <div *ngIf="shoppingCartDTO.TotalItemsDiscount>0" class="pageBody">
+                            <b>Total Item(s) Discount:</b>
+                            <div style="float: right;">{{shoppingCartDTO.TotalItemsDiscount | currency}}</div>  
+                        </div>
+                        <div *ngIf="shoppingCartDTO.TotalTax>0" class="pageBody">
+                            <b>Total Tax:</b> 
+                            <div style="float: right;">{{shoppingCartDTO.TotalTax | currency}}</div>
+                        </div>  
+                        <div *ngIf="Mode=='checkout'" class="pageBody">
+                            <b>Shipping Rate:</b> 
+                            <div style="float: right;">{{shoppingCartDTO.TotalShipping | currency}}</div>  
+                        </div>
+                        <div *ngIf="shoppingCartDTO.TotalOrderDiscount>0" class="pageBody">
+                            <b>Total Order Discount:</b>
+                            <div style="float: right;">{{shoppingCartDTO.TotalOrderDiscount | currency}}</div>  
+                        </div>
+                        <div class="pageBody">
+                            <b>Total to Pay:</b> 
+                            <div style="float: right;">{{shoppingCartDTO.TotalToPay  | currency}}</div>  
+                        </div>
+                    </div>
+                    <!-- Recaptcha -->
+                    <div *ngIf="ShowRecaptcha && Mode=='checkout'" style="margin-top:10px;">
+                        <re-captcha (resolved)="resolved($event)" siteKey="6LeqnMgUAAAAACJhQZmlljBwEMGlrLlsCK4_XBWA"></re-captcha>
+                    </div>  
+                    <!-- Create Order -->
+                    <div style="margin-top: 10px;" *ngIf="ShowTotalSummary && Mode=='checkout'">
+                        <button *ngIf="ShowCreateOrderButton"  class="pageButton" (click)="SubmitOrder()">Create Order</button>
+                        <!--PayPal Smart Payment Buttons here -->
+                        <div *ngIf="ShowPayPalButtons">
+                            <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+                        </div>
+                    </div>
+                    <!-- Summary Total - end -->
+
+
+                    <!-- Proceed To Checkout -->
+                    <div *ngIf="Mode=='cart'">
+                        <button style="margin-top: 10px;" class="pageButton" (click)="ProceedToCheckout()">Proceed to Checkout</button>
+                    </div>
+
+                </div>
+                <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+            </div>
+            <div style="color: red;"  *ngIf="shoppingCartDTO.Items.length==0" >
+                The shopping cart is empty.
+            </div>
+        </div>
+         <!-- Shopping Cart / Checkout - end -->
+    </div>
+</div>

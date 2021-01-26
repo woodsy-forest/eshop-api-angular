@@ -1,0 +1,49 @@
+<div style="height: 300px; overflow-y: auto; overflow-wrap: anywhere;">
+    <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!ShowLoading">
+        <div class="pageTitle">Status History
+            <div style="float: right; margin-right: 1px;"><button class="pageButton" (click)="onUpdateStatus()">Set New</button></div>
+        </div>
+
+        <div *ngIf="orderDTO.OrderStatuses.length>0 && Mode=='List'" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true">
+            <div fxFlex="20" class="component-table-title">Created Date</div>  
+            <div fxFlex="80" class="component-table-title">Status</div>
+        </div>
+
+
+        <div *ngIf="orderDTO.OrderStatuses.length>0 && Mode=='List'">
+            <div  *ngFor="let status of orderDTO.OrderStatuses" fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+                <div fxFlex.gt-xs="20" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Created Date:</b></div>
+                <div>{{status.CreatedOnUtc | date:'yyyy-MM-dd'}}</div>
+                </div>
+                <div fxFlex.gt-xs="80" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Status:</b></div>
+                <div>{{status.Name}}</div>
+                </div>             
+            </div>
+        </div> 
+
+        <div *ngIf="Mode=='Update'">
+            <div class="pageLabel">New Status:</div>  
+            <div class="pageLabel">
+                <select 
+                        [(ngModel)]="selStatusId">
+                    <option *ngFor="let statusDTO of statusDTOs" [value]="statusDTO.Id">
+                    {{statusDTO.Name}}
+                    </option>
+                </select>
+            </div> 
+            <div style="margin-top: 10px;text-align: center;">
+            <button class="pageButton"  (click)="UpdateStatus()">Update</button>
+            <button style="margin-left: 5px;" class="pageButton"  (click)="Cancel()">Cancel</button>
+            </div> 
+        </div>
+    </div>
+</div>
+<div *ngIf="!ShowLoading && Mode=='List'" style="margin-top: 10px;text-align: center;">
+    <button cdkFocusInitial class="pageButton"  (click)="onCloseClick()">Close</button>
+</div>
+

@@ -1,0 +1,99 @@
+<div style="margin: 0px;" fxLayout="row">
+   <div fxFlex="100" style="margin: 10px;">
+    <div fxLayout="column">
+      <div class="pageTitle">Order Api</div>
+      <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+      </div>
+      <div *ngIf="IsAdmin" class="pageBody">
+        Type & Search by Lastname:
+        <input style="width:200px;"
+        [formControl]="search"
+        (keyup)="InputSearch_valuechange($event)"
+        type="text">
+      </div>
+     
+      <div *ngIf="!ShowLoading">
+
+        <div *ngIf="pagedOrderDTO.PageResult.RowCount>0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+            <div fxFlex="5" class="component-table-title">Id</div>  
+            <div fxFlex="10" class="component-table-title">Order Date</div>
+            <div fxFlex="20" class="component-table-title">Customer</div>
+            <div fxFlex="25" class="component-table-title">Address</div>
+            <div fxFlex="10" class="component-table-title">Total Order</div>
+            <div *ngIf="!IsAdmin"  fxFlex="10" class="component-table-title">Payment Method</div>
+            <div *ngIf="IsAdmin"  fxFlex="10" class="component-table-title">Current Status</div>
+            <div *ngIf="!IsAdmin"  fxFlex="10" class="component-table-title">Order Reference</div>
+            <div *ngIf="IsAdmin"  fxFlex="10" class="component-table-title">Notes</div>
+            <div fxFlex="10" class="component-table-title">Invoice</div>
+         </div>
+
+        <div *ngIf="pagedOrderDTO.PageResult.RowCount>0">
+          <div  *ngFor="let order of pagedOrderDTO.Orders" fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+              <div fxFlex.gt-xs="5" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Id:</b></div>
+                <div>{{order.Id}}</div>
+              </div>
+              <div fxFlex.gt-xs="10" class="component-table-row">
+                  <div fxHide.gt-xs="true"><b>Order Date:</b></div>
+                  <div>{{order.CreatedOnUtc | date:'yyyy-MM-dd'}}</div>
+              </div>
+              <div fxFlex.gt-xs="20" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Billing Details:</b></div>
+                <div>{{order.BillingFirstName}} {{order.BillingLastName}} {{order.BillingCompany}}</div>
+              </div>
+              <div fxFlex.gt-xs="25" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Billing Address:</b></div>
+                <div>{{order.BillingAddress1}} - {{order.BillingAddress2}} - 
+                  {{order.BillingCity}} - {{order.BillingZipPostalCode}} -
+                  {{order.BillingStateProvince}} - {{order.BillingCountry}}
+                </div>
+              </div>
+              <div fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Total Order:</b></div>
+                <div>{{order.TotalToPay | currency}}</div>
+              </div>
+              <div *ngIf="!IsAdmin"  fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Payment Method:</b></div>
+                <div>{{order.PaymentMethod}}</div>
+              </div>
+              <div *ngIf="IsAdmin"  fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Current Status:</b></div>
+                <div>{{GetCurrentStatus(order.OrderStatuses)}} - 
+                  <a class="ButtonLink" (click)="showStatuses(order)">History</a>
+                </div>
+              </div>
+              <div *ngIf="!IsAdmin"  fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Order Reference:</b></div>
+                <div>{{order.CartId}}</div>
+              </div>
+              <div *ngIf="IsAdmin"  fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Notes:</b></div>
+                <div>
+                  <a class="ButtonLink" (click)="showNotes(order)">Show</a><br/><br/> 
+                  
+                </div>
+              </div>
+              <div fxFlex.gt-xs="10" class="component-table-row">
+                <div fxHide.gt-xs="true"><b>Invoice:</b></div>
+                <div><a class="ButtonLink" href="{{'/cart/invoice/'+order.Id}}" target=_new >Show Invoice</a></div>
+              </div>                                                      
+           </div>
+        </div>  
+
+        <div *ngIf="pagedOrderDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+          <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+          <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+          Current Page: {{currentPage}} of {{pagedOrderDTO.PageResult.PageCount}}
+          <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+          <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+        </div>
+        <div style="color: red;" *ngIf="pagedOrderDTO.PageResult.RowCount == 0">
+            No order(s) found.
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+</div>

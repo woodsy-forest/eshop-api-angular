@@ -1,0 +1,32 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    <div class="pageTitle">
+        Picture Api
+    </div>
+    <div *ngIf="!ShowLoading">
+        <div *ngIf="pagedPictureDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+            <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+            <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+            Current Page: {{currentPage}} of {{pagedPictureDTO.PageResult.PageCount}}
+            <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+            <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+        </div>
+        <div style="color: red;" *ngIf="pagedPictureDTO.PageResult.RowCount == 0">
+            No picture(s) found.
+        </div>
+    </div>
+    <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!ShowLoading">
+        <div *ngFor="let picture of pagedPictureDTO.Pictures">
+
+            <div class="gallery">
+                <img width="100px" height="100px;" alt="{{picture.AltAttribute}}" title="{{picture.TitleAttribute}}" src="{{picture.FileAsBase64}}" />
+                <br/>
+                <a title="Remove Picture" style="cursor:pointer; margin: 5px;" (click)="RemovePicture(picture.Id)"><i class="fa fa-trash"></i></a>
+                {{picture.FileName}}
+            </div>
+        </div>
+    </div>
+
+</div>

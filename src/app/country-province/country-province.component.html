@@ -1,0 +1,139 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    <div>
+        <div class="pageTitle">
+            Country & StateProvince Api
+        </div>
+        <div class="loader-block" *ngIf="ShowLoading">
+            <app-spinner></app-spinner>
+        </div>
+        <div *ngIf="!ShowLoading">
+            <div class="pageLabel">Country:</div> 
+            <div class="pageLabel">
+            <select 
+                    (change)="selectCountry()"
+                    name="Country"
+                    [(ngModel)]="selectedCountryId">
+                    <option value="0">Please select</option>
+                    <option *ngFor="let countryDTO of CountryDTOs" [value]="countryDTO.Id">
+                        {{countryDTO.Name}}
+                    </option>
+            </select>
+            <button style="margin-left: 5px;" *ngIf="Mode==''" class="pageButton" (click)="onAddCountry()">Add New Country</button>
+            </div>
+            <div *ngIf="Mode=='A'" class="pageLabel">New Country:</div>  
+            <div *ngIf="Mode=='U'" class="pageLabel">Update Country:</div>  
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <input name="Country"
+                        type="text"
+                        [(ngModel)]="selCountryDTO.Name">
+            </div>
+            <div *ngIf="Mode=='A' || Mode=='U'"  class="pageLabel">Two Letter IsoCode:</div>  
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <input style="width: 100px;" name="TwoLetterIsoCode"
+                        type="text"
+                        [(ngModel)]="selCountryDTO.TwoLetterIsoCode">
+            </div>
+            <div *ngIf="Mode=='A' || Mode=='U'"  class="pageLabel">Three Letter IsoCode:</div>  
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <input style="width: 100px;" name="ThreeLetterIsoCode"
+                        type="text"
+                        [(ngModel)]="selCountryDTO.ThreeLetterIsoCode">
+            </div>
+            <div *ngIf="Mode=='A' || Mode=='U'"  class="pageLabel">Numeric IsoCode:</div>  
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <input name="NumericIsoCode"
+                        type="number"
+                        [(ngModel)]="selCountryDTO.NumericIsoCode">
+            </div>   
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <label class="container">Published
+                    <input name="Published"
+                            type="checkbox"
+                            [(ngModel)]="selCountryDTO.Published">
+                    <span class="checkmark"></span>       
+                </label>   
+            </div>  
+            <div *ngIf="Mode=='A' || Mode=='U'"  class="pageLabel">Display Order:</div>   
+            <div *ngIf="Mode=='A' || Mode=='U'" class="pageLabel">
+                <input name="DisplayOrder"
+                        type="number"
+                        [(ngModel)]="selCountryDTO.DisplayOrder">
+            </div>    
+            <div *ngIf="Mode=='A'">
+                <button class="pageButton" (click)="AddCountry()">Add Country</button>
+                <button style="margin-left: 5px;" class="pageButton" (click)="CancelCountry()">Cancel</button>
+            </div>
+            <div *ngIf="Mode=='U'" style="margin-top: 20px;">
+                <button class="pageButton" (click)="UpdateCountry()">Update Country</button>
+                <button style="margin-left: 5px;" class="pageButton" (click)="DeleteCountry()">Delete Country</button>
+                <button style="margin-left: 5px;" class="pageButton" (click)="EditStateProvince()">Edit StateProvince</button>
+                <button style="margin-left: 5px;" class="pageButton" (click)="CancelCountry()">Cancel</button>
+            </div>
+            <div  *ngIf="Mode=='Province'">
+                <div *ngIf="StateProvinceDTOs.length > 0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+                    <div fxFlex="40" class="component-table-title">Name</div>
+                    <div fxFlex="20" class="component-table-title">Abbr.</div>
+                    <div fxFlex="20" class="component-table-title">Published</div>
+                    <div fxFlex="20" class="component-table-title">Display Order</div>
+                </div>
+
+                <div *ngFor="let province of StateProvinceDTOs" fxLayout="row" fxLayout.xs="column">
+                    <div fxFlex.gt-xs="40" fxLayout="row">
+                        <div fxHide.gt-xs="true"><b>Name:</b></div>
+                        <div>
+                            <a title="Remove StateProvince" style="cursor:pointer; margin: 5px;" (click)="DeleteStateProvince(province.Id)"><i class="fa fa-trash"></i></a>
+                            {{province.Name}}
+                        </div>
+                    </div>
+                    <div fxFlex.gt-xs="20" fxLayout="row">
+                        <div fxHide.gt-xs="true"><b>Abbr.:</b></div>
+                        <div>{{province.Abbreviation}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="20" fxLayout="row">
+                        <div fxHide.gt-xs="true"><b>Published:</b></div>
+                        <div>{{province.Published}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="20" fxLayout="row">
+                        <div fxHide.gt-xs="true"><b>Display Order:</b></div>
+                        <div>{{province.DisplayOrder}}</div>
+                    </div>
+                    <div style="border-bottom: 2px solid gray;padding-bottom: 10px" fxHide.gt-xs="true">
+                    </div>
+                </div>
+                <div *ngIf="Mode=='Province'" style="margin-top: 20px;">
+                    <button class="pageButton" (click)="onAddStateProvince()">Add StateProvince</button>
+                    <button style="margin-left: 5px;" class="pageButton" (click)="onAddStateProvinceCancel()">Cancel</button>
+
+                </div>
+                <div style="color: red;" *ngIf="StateProvinceDTOs.length == 0">
+                    No StateProvince(s) found.
+                </div>
+            </div>
+            <div *ngIf="Mode=='ProvinceAdd'">
+                <div class="pageLabel">
+                    Name:<input type="text" [(ngModel)]="selStateProvinceDTO.Name">
+                </div>
+                <div class="pageLabel">
+                    Abbreviation:<input type="text" [(ngModel)]="selStateProvinceDTO.Abbreviation">
+                </div>
+                <div class="pageLabel">
+                    <label class="container">Published
+                        <input name="Published"
+                                type="checkbox"
+                                [(ngModel)]="selStateProvinceDTO.Published">
+                        <span class="checkmark"></span>       
+                    </label>   
+                </div>  
+                <div class="pageLabel">
+                    Display Order:<input name="DisplayOrder"
+                            type="number"
+                            [(ngModel)]="selStateProvinceDTO.DisplayOrder">
+                </div> 
+                <div>
+                    <button class="pageButton" (click)="AddStateProvince()">Add</button>
+                    <button style="margin-left: 5px;" class="pageButton" (click)="onAddStateProvinceCancel()">Cancel</button>
+                </div>    
+            </div>
+        </div>
+    </div>
+</div>

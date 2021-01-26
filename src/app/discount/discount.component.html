@@ -1,0 +1,200 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    <div>
+        <div class="pageTitle">
+            Discount Api
+        </div>
+        <div class="pageBody" *ngIf="Mode==''">
+            Search Discounts:
+            <input style="width:200px;"
+            [formControl]="search"
+            (keyup)="InputSearch_valuechange($event)"
+            type="text">
+            <button style="margin: 10px;" class="pageButton" (click)="SelAddDiscount()">Add New Discount</button>
+        </div>
+        <div class="loader-block" *ngIf="ShowLoading">
+            <app-spinner></app-spinner>
+        </div>
+        <div  *ngIf="!ShowLoading && Mode==''" fxLayout="column" fxFlexFill>
+            <div *ngIf="pagedDiscountDTO.PageResult.RowCount != 0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxHide.sm="true" fxFlexFill>
+              <div fxFlex="5" class="component-table-title"></div>
+              <div fxFlex="10" class="component-table-title">Id</div>
+              <div fxFlex="20" class="component-table-title">Name</div>
+              <div fxFlex="10" class="component-table-title">Discount Type</div>
+              <div fxFlex="10" class="component-table-title">Use Percentage</div>
+              <div fxFlex="10" class="component-table-title">Discount Percentage</div>
+              <div fxFlex="10" class="component-table-title">Discount Amount</div>
+              <div fxFlex="10" class="component-table-title">StartDateUtc</div>
+              <div fxFlex="10" class="component-table-title">EndDateUtc</div>
+              <div fxFlex="15" class="component-table-title">Assigned to Products</div>
+            </div>
+            <div *ngFor="let discount of pagedDiscountDTO.Discounts" fxLayout="row" fxLayout.xs="column" fxLayout.sm="column" fxFlexFill>
+                <div fxFlex="5" class="component-table-row">
+                    <a title="Delete Discount" style="cursor:pointer; margin: 5px;" (click)="DeleteDiscount(discount)"><i class="fa fa-trash"></i></a>
+                    <a title="Update Discount" style="cursor:pointer; margin: 5px;" (click)="SelUpdateDiscount(discount)"><i class="fa fa-pencil"></i></a>      
+                </div>
+               <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Id:</b> {{discount.Id}}</div>
+                <div fxHide.lt-md="true">{{discount.Id}}</div>
+              </div>
+              <div fxFlex="20" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Name:</b> {{discount.Name}}</div>
+                <div fxHide.lt-md="true">{{discount.Name}}</div>
+              </div>
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Discount Type:</b> {{GetDiscountType(discount.DiscountType)}}</div>
+                <div fxHide.lt-md="true">{{GetDiscountType(discount.DiscountType)}}</div>
+              </div>
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Use Percentage:</b> {{discount.UsePercentage}}</div>
+                <div fxHide.lt-md="true">{{discount.UsePercentage}}</div>
+              </div>
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Discount Percentage:</b> {{discount.DiscountPercentage}}</div>
+                <div fxHide.lt-md="true">{{discount.DiscountPercentage}}</div>
+              </div>
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Discount Amount:</b> {{discount.DiscountAmount}}</div>
+                <div fxHide.lt-md="true">{{discount.DiscountAmount}}</div>
+              </div>      
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>StartDateUtc:</b> {{discount.StartDateUtc | date:'shortDate'}}</div>
+                <div fxHide.lt-md="true">{{discount.StartDateUtc | date:'yyyy-MM-dd'}}</div>
+              </div>   
+              <div fxFlex="10" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>EndDateUtc:</b> {{discount.EndDateUtc | date:'shortDate'}}</div>
+                <div fxHide.lt-md="true">{{discount.EndDateUtc | date:'yyyy-MM-dd'}}</div>
+              </div>     
+              <div fxFlex="15" class="component-table-row">
+                <div fxHide.gt-sm="true"><b>Assigned to Products:</b>
+                    <span style="margin-right: 10px;" *ngFor="let gridDiscountProduct of discount.Products">
+                        {{gridDiscountProduct.Name}};
+                    </span>
+                </div>
+                <div fxHide.lt-md="true">
+                    <div *ngFor="let gridDiscountProduct of discount.Products">
+                        {{gridDiscountProduct.Name}};
+                    </div>
+                </div>
+              </div>                      
+            </div>
+            <div *ngIf="pagedDiscountDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+                <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+                <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+                Current Page: {{currentPage}} of {{pagedDiscountDTO.PageResult.PageCount}}
+                <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+                <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+            </div>
+        </div>
+        <div style="color: red;" *ngIf="pagedDiscountDTO.PageResult.RowCount == 0">
+            No discount(s) found.
+        </div>
+
+        <div *ngIf="!ShowLoading" fxLayout="row">
+            <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+            <div fxFlex.xs="100" fxFlex.sm="70" fxFlex.md="50" fxFlex.lg="30" fxFlex.xl="10"  *ngIf="Mode!=''" fxLayout="column">
+                <div class="pageSubTitle">{{PageTitle}}</div>
+                <div *ngIf="selDiscountDTO.Id>0" class="pageLabel">Id: {{selDiscountDTO.Id}}</div>  
+                <div class="pageLabel">Name:</div>  
+                <div class="pageLabel">
+                <input name="Name"
+                        type="text"
+                        [(ngModel)]="selDiscountDTO.Name">
+                </div>  
+
+                <div class="pageLabel">Discount Type:</div> 
+                <div class="pageLabel">
+                  <select 
+                        (change)="selectDiscountType()"
+                        name="DiscountType"
+                        [(ngModel)]="selDiscountDTO.DiscountType">
+                    <option value="0">AssignedToOrderTotal</option>
+                    <option value="1">AssignedToProducts</option>
+                  </select>
+                </div>
+
+                <div class="pageLabel">
+                    <label class="container">Use Percentage?
+                        <input name="UsePercentage"
+                                (change)="changeUsePercentage($event)"
+                                type="checkbox"
+                                [(ngModel)]="selDiscountDTO.UsePercentage">
+                        <span class="checkmark"></span>       
+                    </label>   
+                </div>
+
+
+                <div *ngIf="selDiscountDTO.UsePercentage" class="pageLabel">Discount Percentage:</div>  
+                <div *ngIf="selDiscountDTO.UsePercentage" class="pageLabel">
+                    <input name="DiscountPercentage"
+                            type="number"
+                            step="0.1"
+                            [(ngModel)]="selDiscountDTO.DiscountPercentage">
+                </div>  
+
+                <div *ngIf="!selDiscountDTO.UsePercentage" class="pageLabel">Discount Amount:</div>  
+                <div *ngIf="!selDiscountDTO.UsePercentage" class="pageLabel">
+                    <input name="DiscountType"
+                            type="number"
+                            [(ngModel)]="selDiscountDTO.DiscountAmount">
+                </div>  
+                
+                <div class="pageLabel">StartDateUtc</div>
+                <div>
+                    <input name="StartDateUtc"
+                    type="date"
+                    [ngModel]="selDiscountDTO.StartDateUtc | date:'yyyy-MM-dd'"
+                    (ngModelChange)="selDiscountDTO.StartDateUtc=$event">
+                </div>
+
+                <div class="pageLabel">EndDateUtc</div>
+                <div>
+                    <input name="EndDateUtc"
+                    type="date"
+                    [ngModel]="selDiscountDTO.EndDateUtc | date:'yyyy-MM-dd'"
+                    (ngModelChange)="selDiscountDTO.EndDateUtc=$event">
+                </div>
+
+                
+                <div *ngIf="selDiscountDTO.DiscountType==1" class="pageLabel">Product(s):</div>  
+                <div *ngIf="selDiscountDTO.DiscountType==1" class="pageLabel">
+                    <span style="margin-right: 30px;" *ngFor="let discountProduct of selDiscountDTO.Products">
+                        <a title="Remove Product" style="cursor:pointer; margin: 5px;" (click)="RemoveDiscountProduct(discountProduct)"><i class="fa fa-trash"></i></a>
+                        {{discountProduct.Name}}
+                    </span>
+                </div>  
+                <div *ngIf="selDiscountDTO.DiscountType==1" class="pageLabel">
+                    Add Product: <input style="width:200px;"
+                    [formControl]="searchProduct"
+                    (keyup)="changeInputProduct($event)"
+                    type="text">
+
+                    <!-- begin -->
+                    <div *ngIf="ShowLoadingProduct">
+                        <app-spinner></app-spinner>
+                    </div>
+                    <div style="color: red;" *ngIf="ShowNoProductFound">
+                        No product(s) found.
+                    </div>
+                    <div *ngIf="ShowProductList">
+                        <div class="TableSearch" *ngFor="let productDTO of pagedProductDTO.Products">
+                            <div (click)="AddDiscountProduct(productDTO)">{{productDTO.Name}}</div>
+                        </div>
+                    </div>
+
+                    <!-- end -->
+
+                </div>
+
+
+                <div style="margin-top: 20px;">
+                    <button *ngIf="Mode=='A'"  class="pageButton" (click)="AddDiscount()">Add New Discount</button>
+                    <button *ngIf="Mode=='U'"  class="pageButton" (click)="UpdateDiscount()">Update Discount</button>
+                    <button style="margin-left: 5px;" class="pageButton" (click)="CancelEdit()">Cancel</button>
+                </div>
+            </div>
+            <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+        </div>
+
+
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    
+  <div fxLayout="column">
+
+    <div class="loader-block" *ngIf="ShowLoading">
+      <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!ShowLoading">
+      <div class="pageSubTitle">
+        Account Api - Login
+      </div>
+      <div class="pageBody">
+        To set up the eShop you must login as an Administrator. The credentials for Admin are as follow:
+        <div>email: admin@yourstore.com</div>
+        <div>password: admin</div>
+  
+      </div>
+      <div style="margin-top:20px;">
+        <div class="pageLabel">Email:</div>
+        <div>
+          <input type="text" [(ngModel)]="loginEmail" name="loginEmail">
+        </div>
+
+        <div class="pageLabel">Password:</div>
+        <div>
+          <input type="password" [(ngModel)]="loginPassword" name="loginPassword">
+        </div>
+        <div style="margin-top:10px; margin-bottom:20px;">
+          <label class="container">
+            Keep me signed in
+            <input type="checkbox" name="loginRememberMe" [(ngModel)]="loginRememberMe" checked="checked">
+            <span class="checkmark"></span>
+          </label>
+        </div>
+        <div>
+          <button  class="pageButton" (click)="Login()">Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+

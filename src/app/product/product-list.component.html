@@ -1,0 +1,552 @@
+<div fxFlex="100" style="margin: 10px;">
+      <div>
+          <div class="pageTitle">
+            Product Api
+          </div>
+      </div>
+    <div class="pageBody">
+        Search Products:
+        <input style="width:200px;"
+        [formControl]="search"
+        (keyup)="InputSearch_valuechange($event)"
+        type="text">
+    </div>
+    <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+    </div>
+    <div class="pageBody" *ngIf="!ShowLoading">
+
+        <div fxFlex="100" fxLayout.lt-md="column" fxLayout.gt-sm="row" fxFlexFill>
+            <div fxFlex.gt-sm="20" fxFlex.lt-md="100">
+              <div style="margin-right: 10px;" class="pageSubTitle">Category List
+                <button class="pageButton" *ngIf="!(screenWidth > breakMedia)" type="button" (click)="sidenavToggle()">
+                    <i style="color: white;" class="fa fa-bars"></i>
+                </button>
+              </div>
+              <div *ngIf="categoryDTOs.length!=0">
+                <div  *ngIf="screenWidth>breakMedia || sideNavToggled">
+                    <div *ngFor="let categoryDTO of categoryDTOs">
+                        <a  [ngStyle]="{'margin-left.px': GetCategoryTreeLevel(categoryDTO)}" class="CategoryMenuItem" title="Display Products in this Category"style="cursor:pointer; margin: 5px;" (click)="SelSubCategories(categoryDTO)">{{categoryDTO.Name}}</a>
+                    </div>
+                </div>
+              </div>
+              <div>
+                <div style="color: red;" *ngIf="categoryDTOs.length==0">No Category Found</div>
+              </div>
+            </div>
+            <div fxFlex.gt-sm="80" fxFlex.lt-md="100" fxFlexFill>
+
+                 <!-- PRODUCT LIST - BEGIN -->
+                 <div *ngIf="Mode==''" fxLayout="column">
+                    <div class="pageSubTitle">
+                        {{ProductListTitle}}
+                        <button style="margin: 10px;" class="pageButton" (click)="SelAddProduct()">Add New Product</button>
+
+                    </div>
+                    <div style="margin: 10px;" fxLayout.gt-xs="row" fxLayout.xs="column" *ngFor="let product of pagedProductDTO.Products">
+                        <div style="margin: 10px;">
+                            <img width="200px" height="200px;" alt="{{product.Picture?.AltAttribute}}" title="{{product.Picture?.TitleAttribute}}" src="{{product.Picture?.FileAsBase64}}" />
+                        </div> 
+                        <div fxLayout.gt-xs="column" fxLayout.xs="row" *ngIf="product.Pictures.length>1">       
+                            <div *ngFor="let productPicture of product.Pictures">
+                                <img style="cursor: pointer; margin: 10px;" (click)="setProductPicture(product, productPicture)" width="60px" height="60px;" alt="{{productPicture.AltAttribute}}" title="{{productPicture.TitleAttribute}}" src="{{productPicture.FileAsBase64}}" />
+                            </div>
+                        </div>
+                        <div style="margin: 10px;" fxLayout="column">
+                            <div>
+                                <a title="Delete Product" style="cursor:pointer; margin: 5px;" (click)="DeleteProduct(product)"><i class="fa fa-trash"></i></a>
+                                <a title="Update Product" style="cursor:pointer; margin: 5px;" (click)="SelUpdateProduct(product)"><i class="fa fa-pencil"></i></a>                
+                                <a class="Link" (click)="openProductDetails(product)">{{product.Name}}</a>
+                            </div>
+                            <div>{{product.ShortDescription}}</div>
+                            <div *ngIf="product.OldPrice!=0"  style="text-decoration: line-through;">Old price: {{product.OldPrice | currency}}</div>
+                            <div *ngIf="product.DiscountAmount==0">Price: {{product.Price | currency}}</div>    
+                            <div *ngIf="product.DiscountAmount>0" style="text-decoration: line-through;">Price: {{product.Price | currency}}</div>                        
+                            <div *ngIf="product.DiscountAmount>0">Your Price: {{GetPrice(product) | currency}}</div>                           
+                            <!-- Attribute List - begin -->
+                            <div *ngIf="product.Attributes.length>0">
+                                <div *ngFor="let productAttribute of product.Attributes">
+                                    <div>{{getProductAttributeNameDisplay(productAttribute)}}</div>
+                                    <div>
+                                        <select 
+                                            (change)="selectProductValue(product, productAttribute)"
+                                            [(ngModel)]="productAttribute.SelectedAttributeValueId">
+                                            <option value="0"></option>
+                                            <option *ngFor="let productAttributeValue of productAttribute.Values"  [selected]="true" [value]="productAttributeValue.Id">
+                                                {{productAttributeValue.Name}} <span *ngIf="GetProductAttributeValuePriceAdjustment(product.Price, productAttributeValue)!=0">
+                                                    [<span *ngIf="GetProductAttributeValuePriceAdjustment(product.Price, productAttributeValue)>0">+</span>
+                                                    {{GetProductAttributeValuePriceAdjustment(product.Price, productAttributeValue) | currency}}]</span>
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Attribute List - end -->
+                            <div style="margin-top: 5px;">
+                                <button class="pageButton" (click)="addToCart(product, product.Attributes)">Add To Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="pagedProductDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+                        <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+                        <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+                        Current Page: {{currentPage}} of {{pagedProductDTO.PageResult.PageCount}}
+                        <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+                        <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+                        Sort by 
+                        <select 
+                                (change)="selectSortBy()"
+                                name="selSortBy"
+                                [(ngModel)]="selSortBy">
+                            <option value="displayOrder,ASC">Display Order</option>
+                            <option value="name,ASC">Name: A to Z</option>
+                            <option value="name,DESC">Name: Z to A</option>
+                            <option value="price,ASC">Price: Low to High</option>
+                            <option value="price,DESC">Price: High to Low</option>
+                        </select>
+                        Display
+                        <select 
+                                (change)="selectCurrPage()"
+                                name="currentPage"
+                                [(ngModel)]="pageSize">
+                            <option value="1">1</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                        </select>
+                        per page
+                    </div>
+                    <div style="color: red;" *ngIf="pagedProductDTO.PageResult.RowCount == 0">
+                        No product(s) found.
+                    </div>
+                </div>
+                 <!-- PRODUCT LIST - END -->
+
+                <!-- EDIT PRODUCT - BEGIN -->
+                <div *ngIf="Mode!=''" fxLayout="column">
+                    <div class="pageSubTitle">
+                        {{EditProductTitle}}
+                    </div>
+                    <div fxLayout="column">
+                        <div class="tab">
+                            <button [ngClass]="{'tabActive': SelectedTab==='Product'}" (click)="selTab('Product')">Product</button>
+                            <button [ngClass]="{'tabActive': SelectedTab==='Pictures'}" (click)="selTab('Pictures')">Pictures</button>
+                            <button [ngClass]="{'tabActive': SelectedTab==='Attributes'}" (click)="selTab('Attributes')">Attributes</button>
+                        </div>
+
+
+                        <!-- Product Tab - begin -->
+                        <div *ngIf="SelectedTab=='Product'">
+
+                            <div *ngIf="selProductDTO.Id!=0" class="pageLabel">Id: {{selProductDTO.Id}}</div>  
+
+                            <div class="pageLabel">Category(s):</div>  
+                            <div class="pageLabel">
+                                <span style="margin-right: 30px;" *ngFor="let productCategory of selProductDTO.Categories">
+                                    <a title="Remove Category" style="cursor:pointer; margin: 5px;" (click)="RemoveProductCategory(productCategory)"><i class="fa fa-trash"></i></a>
+                                    {{productCategory.Name}}
+                                </span>
+                            </div>  
+                            <div class="pageLabel">
+                                Search & Add Category: <input style="width:200px;"
+                                [formControl]="searchCategory"
+                                (keyup)="changeInputCategory($event)"
+                                type="text">
+            
+                                <!-- begin -->
+                                <div *ngIf="ShowLoadingCategory">
+                                    <app-spinner></app-spinner>
+                                </div>
+                                <div style="color: red;" *ngIf="ShowNoCategoryFound">
+                                    No category(s) found.
+                                </div>
+                                <div *ngIf="ShowCategoryList">
+                                    <div class="TableSearch" *ngFor="let productCategoryDTO of productCategoryDTOs">
+                                        <div (click)="AddProductCategory(productCategoryDTO)">{{productCategoryDTO.Name}}</div>
+                                    </div>
+                                </div>
+            
+                                <!-- end -->
+            
+                            </div>
+                            
+                            <div class="pageLabel">
+                                Name:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Name"
+                                        type="text"
+                                        [(ngModel)]="selProductDTO.Name">
+                            </div>
+
+                            <div class="pageLabel">
+                                Sku:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Sku"
+                                        type="text"
+                                        [(ngModel)]="selProductDTO.Sku">
+                            </div>
+                        
+                            <div class="pageLabel">
+                                Short Description:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="ShortDescription"
+                                        type="text"
+                                        [(ngModel)]="selProductDTO.ShortDescription">
+                            </div>
+
+                            <div class="pageLabel">
+                                Full Description:
+                            </div>  
+                            <div class="pageLabel">
+                                <textarea name="FullDescription"
+                                        type="text"
+                                        rows="40" cols="20"
+                                        [(ngModel)]="selProductDTO.FullDescription">
+                                </textarea>
+                            </div>
+                            <div class="pageLabel">
+                                Manage Inventory Type:
+                            </div>  
+                            <div class="pageLabel">
+                                <select 
+                                      name="ManageInventoryType"
+                                      [(ngModel)]="selProductDTO.ManageInventoryType">
+                                  <option value="0">DontTrackInventory</option>
+                                  <option value="1">TrackInventory</option>
+                                  <option value="2">TrackInventoryByProductAttributes</option>
+                                </select>
+                            </div>
+
+                            <div class="pageLabel">
+                                Stock Quantity:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="StockQuantity"
+                                        type="number"
+                                        step="1"
+                                        [(ngModel)]="selProductDTO.StockQuantity">
+                            </div>   
+            
+                            <div class="pageLabel">
+                                Price:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Price"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.Price">
+                            </div>   
+
+                            <div class="pageLabel">
+                                Old Price:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="OldPrice"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.OldPrice">
+                            </div>  
+
+                            <div class="pageLabel">
+                                Tax Rate:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="TaxRate"
+                                        type="number"
+                                        step="0.1"
+                                        [(ngModel)]="selProductDTO.TaxRate">
+                            </div>  
+
+                            <div class="pageLabel">
+                                Weight:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Weight"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.Weight">
+                            </div>  
+                            
+                            <div class="pageLabel">
+                                Length:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Length"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.Length">
+                            </div>  
+
+                            <div class="pageLabel">
+                                Width:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Width"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.Width">
+                            </div>  
+
+                            <div class="pageLabel">
+                                Height:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="Height"
+                                        type="number"
+                                        step="0.01"
+                                        [(ngModel)]="selProductDTO.Height">
+                            </div>  
+
+                            <div class="pageLabel">
+                                DisplayOrder:
+                            </div>  
+                            <div class="pageLabel">
+                                <input name="DisplayOrder"
+                                        type="number"
+                                        step="1"
+                                        [(ngModel)]="selProductDTO.DisplayOrder">
+                            </div> 
+                            
+                            <div class="pageLabel">
+                                <label class="container">Published
+                                <input name="Published"
+                                type="checkbox"
+                                [(ngModel)]="selProductDTO.Published">
+                                <span class="checkmark"></span>       
+                                </label>   
+                            </div> 
+                            
+                            <div *ngIf="selProductDTO.CreatedOnUtc" class="pageLabel">CreatedOnUtc: {{selProductDTO.CreatedOnUtc | date:'yyy-MM-dd HH:mm:ss'}}</div>  
+
+                            <div *ngIf="selProductDTO.UpdatedOnUtc" class="pageLabel">UpdatedOnUtc: {{selProductDTO.UpdatedOnUtc | date:'yyy-MM-dd HH:mm:ss'}}</div>  
+          
+                        </div>
+                        <!-- Product Tab - end -->
+
+                        <!-- Pictures Tab - begin -->
+                        <div *ngIf="SelectedTab=='Pictures'">
+
+                            <div class="pageLabel">Picture(s):</div>
+                            <div class="pageLabel"  
+                                    cdkDropList
+                                    #ProductPictureList="cdkDropList"
+                                    [cdkDropListData]="selProductDTO.Pictures"
+                                    (cdkDropListDropped)="onDropProductPicture($event)">
+                                <div *ngFor="let productPicture of selProductDTO.Pictures" cdkDrag class="pageLabel">
+                                    <a title="Remove Picture" style="cursor:pointer; margin: 5px;" (click)="RemoveProductPicture(productPicture)"><i class="fa fa-trash"></i></a>
+                                    <img width="100px" height="100px;" alt="{{productPicture.AltAttribute}}" title="{{productPicture.TitleAttribute}}" src="{{productPicture.FileAsBase64}}" />
+                                    Display Order: <input type="number" (input)="changeInputDisplayOrder($event)" [(ngModel)]="productPicture.DisplayOrder" /> 
+                                </div> 
+                            </div>    
+                            <div class="pageLabel">
+                                Upload a new Picture: 
+                                <input style="cursor:pointer;" type="file" (change)="onFileChange($event)">
+                            </div>
+                            <div>
+                                Alt Attribute:<input name="AltAttribute" type="text" [(ngModel)]="selProductPictureAltAttribute">
+                            </div>
+                            <div>
+                                Title Attribute:<input name="TitleAttribute" type="text" [(ngModel)]="selProductPictureTitleAttribute" /> 
+                            </div>
+                            <div>
+                                Display Order:
+                            </div>
+                            <div>
+                                <input name="DisplayOrder" type="number" [(ngModel)]="selProductPictureDisplayOrder" /> 
+                            </div>
+                            <div>
+                                <button style="margin-top: 10px;" class="pageButton" (click)="uploadPicture()">Upload Picture</button>
+                            </div>                                                   
+
+                        </div>
+                        <!-- Pictures Tab - end -->
+
+                        <!-- Attributes Tab - begin -->
+                        <div *ngIf="SelectedTab=='Attributes'">
+                            <div class="pageLabel">
+                                Search & Add Attribute: 
+                            </div>
+                            <div class="pageBody">    
+                                <input style="width:200px;"
+                                [formControl]="searchAttribute"
+                                (keyup)="changeInputAttribute($event)"
+                                type="text">
+                            </div>
+        
+                            <!-- begin -->
+                            <div *ngIf="ShowLoadingAttribute">
+                                <app-spinner></app-spinner>
+                            </div>
+                            <div class="pageBody" style="color: red;" *ngIf="ShowNoAttributeFound">
+                                No attribute(s) found.
+                            </div>
+                            <div *ngIf="ShowAttributeList">
+                                <div class="TableSearch" *ngFor="let productAttributeDTO of productAttributeDTOs">
+                                    <div (click)="AddProductAttribute(productAttributeDTO)">
+                                        {{productAttributeDTO.Name}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pageLabel">Attributes:</div> 
+                            <div class="pageBody" *ngIf="selProductDTO.Attributes.length>0">
+                                <select 
+                                    (change)="selectProductAttribute()"
+                                    name="productAttributes"
+                                    [(ngModel)]="selectedProductAttributeId">
+                                    <option *ngFor="let productAttribute of selProductDTO.Attributes" [value]="productAttribute.Id">
+                                        {{productAttribute.Name}}
+                                    </option>
+                                </select>
+                                <button style="margin-left: 5px;" class="pageButton" *ngIf="selectedProductAttributeId>0" (click)="removeProductAttribute(selectedProductAttributeId)">Remove Attribute</button>
+                            </div>
+                            <div class="pageBody" style="color: red;" *ngIf="selProductDTO.Attributes.length==0">
+                                No attribute(s) setup.
+                            </div>
+                            
+                            <div *ngFor="let selectedProductAttribute of selProductDTO.Attributes">
+                                <div *ngIf="selectedProductAttribute.Id==selectedProductAttributeId">
+                                    <div *ngIf="selectedProductAttributeId>0">
+                                        <div class="pageLabel">Attribute Properties:</div> 
+                                        <div style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxHide.sm="true" fxFlexFill>
+                                            <div fxFlex="50" class="component-table-title">Prompt Text</div>
+                                            <div fxFlex="20" class="component-table-title">Is Required?</div>
+                                            <div fxFlex="30" class="component-table-title">Display Order</div>            
+                                        </div>
+                                        <div fxLayout="row" fxLayout.xs="column" fxLayout.sm="column" style="margin-top: 10px;" class="pageLabel">
+                                            <div fxFlex="50" class="component-table-row">
+                                                <div fxHide.gt-sm="true"><b>Prompt Text:</b><input class="inputGrid" type="text" [(ngModel)]="selectedProductAttribute.PromptText"></div>
+                                                <div fxHide.lt-md="true"><input class="inputGrid" type="text" [(ngModel)]="selectedProductAttribute.PromptText"></div>
+                                            </div>
+                                            <div fxFlex="20" class="component-table-row">
+                                                <div fxHide.gt-sm="true"><b>Is Required?:</b><input type="checkbox" [(ngModel)]="selectedProductAttribute.IsRequired"></div>
+                                                <div fxHide.lt-md="true"><input type="checkbox" [(ngModel)]="selectedProductAttribute.IsRequired"></div>
+                                            </div>
+                                            <div fxFlex="30" class="component-table-row">
+                                                <div fxHide.gt-sm="true"><b>Display Order:</b><input  type="number" [(ngModel)]="selectedProductAttribute.DisplayOrder" (input)="changeInputAttributeDisplayOrder(selProductDTO.Attributes)"></div>
+                                                <div fxHide.lt-md="true"><input  type="number" [(ngModel)]="selectedProductAttribute.DisplayOrder" (input)="changeInputAttributeDisplayOrder(selProductDTO.Attributes)"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pageLabel">Attribute Values:</div> 
+                                    <button style="margin-left: 5px;" class="pageButton" *ngIf="selectedProductAttributeId>0" (click)="addNewProductAttributeValue(selectedProductAttributeId)">Add New Value</button>
+                                    <div *ngIf="selectedProductAttribute.Values.length > 0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxHide.sm="true" fxFlexFill>
+                                        <div fxFlex="5" class="component-table-title"></div>
+                                        <div fxFlex="20" class="component-table-title">Picture</div>
+                                        <div fxFlex="15" class="component-table-title">Name</div>
+                                        <div fxFlex="10" class="component-table-title">Price Adj. Use %</div>
+                                        <div fxFlex="10" class="component-table-title">Price Adj.</div>
+                                        <div fxFlex="10" class="component-table-title">Weight Adj.</div>
+                                        <div fxFlex="10" class="component-table-title">Qty</div>
+                                        <div fxFlex="10" class="component-table-title">Is Pre Sel.</div>
+                                        <div fxFlex="10" class="component-table-title">Order</div>
+                                    </div>
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayout.sm="column" *ngFor="let attributeValue of selectedProductAttribute.Values" style="margin-top: 10px;" class="pageLabel">
+                                        <div fxFlex="5" class="component-table-row">
+                                            <a title="Delete This Attribute Value" style="cursor:pointer; margin: 5px;" (click)="DeleteProductAttributeValue(attributeValue.Name)"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                        <div fxFlex="20" class="component-table-row">
+                                            <div>
+                                                <div fxLayout="row" *ngIf="displayProductAttributeValuePicture(attributeValue)!=true">
+                                                    <div class="SelectedNonePicture">None</div>
+                                                    <div>
+                                                        <a class="SelectedPictureToggle" title="Open Picture List" (click)="selectProductAttributeValuePictureList(attributeValue.Id)"><i class="fa fa-caret-down"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div fxLayout="row" *ngIf="displayProductAttributeValuePicture(attributeValue)==true">
+                                                    <div>
+                                                        <img class="SelectedPicture" src="{{attributeValue.Picture.FileAsBase64}}" />
+                                                    </div>
+                                                    <div>
+                                                        <a class="SelectPictureToggle" title="Open/Close Picture List" (click)="selectProductAttributeValuePictureList(attributeValue.Id)"><i class="fa fa-caret-down"></i></a>
+                                                    </div>      
+                                                </div>
+                                                <div *ngIf="displayProductAttributeValueIdPictureList==attributeValue.Id && displayProductAttributeValuePictureList==true">
+                                                    <div class="SelectPictureNone" (click)="deselectProductAttributeValuePicture(attributeValue)">
+                                                         None
+                                                    </div>
+                                                    <div *ngFor="let productPicture of selProductDTO.Pictures">
+                                                        <img class="SelectPictureList" (click)="selectProductAttributeValuePicture(attributeValue, productPicture)" src="{{productPicture.FileAsBase64}}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="15" class="component-table-row">                                            
+                                            <div fxHide.gt-sm="true">                                                
+                                                <b>Name:</b><input  class="inputGrid" type="text" [(ngModel)]="attributeValue.Name">
+                                            </div>
+                                            <div fxHide.lt-md="true">
+                                                <input class="inputGrid" type="text" [(ngModel)]="attributeValue.Name">
+                                            </div>
+                                        </div>
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Price Adjustment Use Percentage:</b><input  type="checkbox" [(ngModel)]="attributeValue.PriceAdjustmentUsePercentage"></div>
+                                            <div fxHide.lt-md="true">
+                                                <label class="container">
+                                                    <input type="checkbox" [(ngModel)]="attributeValue.PriceAdjustmentUsePercentage">
+                                                    <span style="top: unset;left:unset;bottom: -10px;" class="checkmark"></span>      
+                                                </label>    
+                                            </div>
+                                        </div> 
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Price Adjustment:</b><input  step="0.01" type="number" [(ngModel)]="attributeValue.PriceAdjustment"></div>
+                                            <div fxHide.lt-md="true"><input class="inputGrid" style="text-align: right;" type="number" step="0.01" [(ngModel)]="attributeValue.PriceAdjustment"></div>
+                                        </div>
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Weight Adjustment:</b><input  type="number" step="0.01" [(ngModel)]="attributeValue.WeightAdjustment"></div>
+                                            <div fxHide.lt-md="true"><input class="inputGrid"  style="text-align: right;" type="number" step="0.01" [(ngModel)]="attributeValue.WeightAdjustment"></div>
+                                        </div>
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Quantity:</b><input type="number" [(ngModel)]="attributeValue.Quantity"></div>
+                                            <div fxHide.lt-md="true"><input class="inputGrid"  style="text-align: right;" type="number" [(ngModel)]="attributeValue.Quantity"></div>
+                                        </div>
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Is PreSelected:</b><input type="checkbox" [(ngModel)]="attributeValue.IsPreSelected"></div>
+                                            <div fxHide.lt-md="true">
+                                                <label class="container">
+                                                    <input type="checkbox" [(ngModel)]="attributeValue.IsPreSelected">
+                                                    <span style="top: unset;left:unset;bottom: -10px;" class="checkmark"></span>     
+                                                </label> 
+                                            </div>
+                                        </div> 
+                                        <div fxFlex="10" class="component-table-row">
+                                            <div fxHide.gt-sm="true"><b>Display Order:</b><input type="number" (change)="changeInputAttributeValueDisplayOrder(selectedProductAttribute.Values)" [(ngModel)]="attributeValue.DisplayOrder"></div>
+                                            <div fxHide.lt-md="true"><input class="inputGrid"  style="text-align: right;" type="number" (change)="changeInputAttributeValueDisplayOrder(selectedProductAttribute.Values)" [(ngModel)]="attributeValue.DisplayOrder"></div>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>
+        
+                            <!-- end -->
+
+                        </div>
+                        <!-- Attributes Tab - end -->
+
+                        <!--Update Buttons - begin-->
+                        <div class="tab" style="margin-top: 10px;">
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button *ngIf="Mode=='A'" style="margin-top: 10px;" class="pageButton" (click)="AddProduct()">Add New Product</button>
+                            <button *ngIf="Mode=='U'" style="margin-top: 10px;" class="pageButton" (click)="UpdateProduct()">Update Product</button>
+                            <button style="margin-left: 5px;" class="pageButton" (click)="CancelEdit()">Cancel</button>
+                        </div>
+                        <!--Update Buttons - end-->
+
+                    </div>
+                </div>
+                <!-- EDIT PRODUCT - END -->
+
+
+            
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</div>

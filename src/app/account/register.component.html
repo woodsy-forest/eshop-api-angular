@@ -1,0 +1,42 @@
+<div fxFlex="100" style="margin: 10px;"> 
+    
+  <div fxLayout="column">
+
+    <div class="loader-block" *ngIf="ShowLoading">
+      <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!ShowLoading">
+      <div class="pageTitle">
+        Account Api - Register
+      </div>
+      <div style="margin-top:20px;">
+        <div class="pageLabel">FirstName:</div>
+        <div>
+          <input type="text" [(ngModel)]="registerFirstName" name="registerFirstName">
+        </div>
+        <div class="pageLabel">LastName:</div>
+        <div>
+          <input [(ngModel)]="registerLastName" type="text" name="registerLastName">
+        </div>
+        <div class="pageLabel">Email:</div>
+        <div>
+          <input type="text" [(ngModel)]="registerEmail" name="registerEmail">
+        </div>
+
+        <div class="pageLabel">Password:</div>
+        <div>
+          <input [(ngModel)]="registerPassword" type="password" name="registerPassword">
+        </div>   
+        <div style="margin-top:10px;">
+          <re-captcha (resolved)="resolved($event)" siteKey="6LeqnMgUAAAAACJhQZmlljBwEMGlrLlsCK4_XBWA"></re-captcha>
+        </div>     
+        <div style="margin-top:20px;">
+          <button class="pageButton" (click)="Register()">Register</button>
+        </div>
+      </div>      
+    </div>
+  </div>
+
+</div>
+
+

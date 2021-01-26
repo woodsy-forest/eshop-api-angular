@@ -1,0 +1,240 @@
+<div style="margin: 0px;" fxLayout="row">
+   <div fxFlex="100" style="margin: 10px;">
+    <div fxLayout="column">
+      <div class="pageTitle">Customer Api</div>
+        <div class="loader-block" *ngIf="ShowLoading || ShowLoadingtateProvinces">
+          <app-spinner></app-spinner>
+        </div>
+        <div *ngIf="IsAdmin && Mode=='List'" class="pageBody">
+          Type & Search by Lastname:
+          <input style="width:200px;"
+          [formControl]="search"
+          (keyup)="InputSearch_valuechange($event)"
+          type="text">
+        </div>
+        <div *ngIf="IsAdmin && Mode=='List'">
+
+            <div *ngIf="pagedCustomerDTO.PageResult.RowCount>0" style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+                <div fxFlex="5" class="component-table-title"></div>
+                <div fxFlex="15" class="component-table-title">Firstname</div>
+                <div fxFlex="15" class="component-table-title">Lastname</div>
+                <div fxFlex="15" class="component-table-title">Company</div>
+                <div fxFlex="50" class="component-table-title">Address</div>
+             </div>
+
+             <div *ngIf="pagedCustomerDTO.PageResult.RowCount>0">
+              <div  *ngFor="let customer of pagedCustomerDTO.Customers"  fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+                  <div fxFlex.gt-xs="5" class="component-table-row">
+                      <div fxHide.gt-xs="true"><b>Edit:</b></div>
+                      <div><a title="Edit Customer" style="cursor:pointer; margin: 5px;" (click)="EditCustomer(customer)"><i class="fa fa-pencil"></i></a></div>
+                  </div>
+                  <div fxFlex.gt-xs="15" class="component-table-row">
+                      <div fxHide.gt-xs="true"><b>Firstname:</b></div>
+                      <div>{{customer.BillingFirstName}}</div>
+                  </div>
+                  <div fxFlex.gt-xs="15" class="component-table-row">
+                    <div fxHide.gt-xs="true"><b>Lastname:</b></div>
+                    <div>{{customer.BillingLastName}}</div>
+                  </div>
+                  <div fxFlex.gt-xs="15" class="component-table-row">
+                    <div fxHide.gt-xs="true"><b>Company:</b></div>
+                    <div>{{customer.BillingCompany}}</div>
+                  </div>
+                  <div fxFlex.gt-xs="50" class="component-table-row">
+                    <div fxHide.gt-xs="true"><b>Address:</b></div>
+                    <div>{{customer.BillingAddress1}} - {{customer.BillingAddress2}} - 
+                      {{customer.BillingCity}} - {{customer.BillingZipPostalCode}} -
+                      {{customer.BillingStateProvince}} - {{customer.BillingCountry}}
+                    </div>
+                  </div>
+              </div>
+             </div>  
+
+
+
+
+            <div *ngIf="pagedCustomerDTO.PageResult.RowCount != 0" style="margin-top: 10px;">
+              <a title="First Page" (click)="NavigateFirst()" class="pageButtonNavigation">&#8249;&#8249;</a>
+              <a title="Previous Page" (click)="NavigatePrevious()" class="pageButtonNavigation">&#8249;</a>
+              Current Page: {{currentPage}} of {{pagedCustomerDTO.PageResult.PageCount}}
+              <a title="Next Page" (click)="NavigateNext()" class="pageButtonNavigation">&#8250;</a>
+              <a title="Last Page" (click)="NavigateLast()" class="pageButtonNavigation">&#8250;&#8250;</a>
+          </div>
+          <div style="color: red;" *ngIf="pagedCustomerDTO.PageResult.RowCount == 0">
+              No customer(s) found.
+          </div>
+        </div>
+        <div *ngIf="!ShowLoading && !ShowLoadingtateProvinces && Mode=='Edit'" fxLayout="row">
+          <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+          <div fxFlex.xs="100" fxFlex.sm="70" fxFlex.md="50" fxFlex.lg="30" fxFlex.xl="10"  fxLayout="column">
+            <div class="pageSubTitle">
+              My Details (Id: {{customerDTO.Id}})
+              <div style="float: right;">
+                <a title="Expand" *ngIf="!ShowMyDetails" style="cursor:pointer; margin: 5px;" (click)="DisplayMyDisplay()"><i class="fa fa-plus"></i></a>
+                <a title="Collapse" *ngIf="ShowMyDetails" style="cursor:pointer; margin: 5px;" (click)="DisplayMyDisplay()"><i class="fa fa-minus"></i></a>
+              </div>
+            </div>  
+            <div *ngIf="ShowMyDetails">
+              <div class="pageLabel">Email:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.Email">
+              </div>  
+              <div class="pageLabel">Phone Number:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.PhoneNumber">
+              </div>
+              <div class="pageLabel">
+                <label class="container">Is Active
+                  <input name="IsActive"
+                  type="checkbox"
+                  [(ngModel)]="customerDTO.IsActive">
+                  <span class="checkmark"></span>       
+                </label>  
+              </div>
+              <div class="pageLabel">Failed Login Attempts:</div>  
+              <div class="pageLabel">
+                <input name="FailedLoginAttempts" type="number" [(ngModel)]="customerDTO.FailedLoginAttempts">
+              </div>  
+              <div class="pageLabel">Last Login Utc: {{customerDTO.LastLoginDateUtc | date:'yyyy-MM-dd hh:mm:ss'}}</div>  
+              <div class="pageLabel">Created Date Utc: {{customerDTO.CreatedOnUtc | date:'yyyy-MM-dd hh:mm:ss'}}</div> 
+            </div>
+            <div class="pageSubTitle">
+              My Billing Address
+              <div style="float: right;">
+                <a title="Expand" *ngIf="!ShowBillingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayBilligAddress()"><i class="fa fa-plus"></i></a>
+                <a title="Collapse" *ngIf="ShowBillingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayBilligAddress()"><i class="fa fa-minus"></i></a>
+              </div>
+            </div>
+            <div *ngIf="ShowBillingAddress"> 
+              <div class="pageLabel">Fistname:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingFirstName">
+              </div>
+              <div class="pageLabel">Lastname:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingLastName">
+              </div>
+              <div class="pageLabel">Company:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingCompany">
+              </div>
+              <div class="pageLabel">Address1:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingAddress1">
+              </div>
+              <div class="pageLabel">Address2:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingAddress2">
+              </div>
+              <div class="pageLabel">City:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingCity">
+              </div>
+              <div class="pageLabel">Zip/Postalcode:</div>  
+              <div class="pageLabel">
+                <input type="text" [(ngModel)]="customerDTO.BillingZipPostalCode">
+              </div>
+              <div class="pageLabel">State/Province:</div>  
+              <div class="pageLabel" *ngIf="billingStateProvinceDTOs.length>0">
+                <select 
+                      name="BillingStateProvince"
+                      [(ngModel)]="customerDTO.BillingStateProvinceCode">
+                  <option *ngFor="let billingStateProvinceDTO of billingStateProvinceDTOs" [value]="billingStateProvinceDTO.Abbreviation">
+                    {{billingStateProvinceDTO.Name}}
+                  </option>
+                </select>
+              </div>
+              <div *ngIf="billingStateProvinceDTOs.length==0">
+                <input type="text" [(ngModel)]="customerDTO.BillingStateProvince">
+              </div>
+              <div class="pageLabel">Country:</div>  
+              <div class="pageLabel">
+                <select 
+                      (change)="selectBillingCountry()"
+                      [(ngModel)]="customerDTO.BillingCountryCode">
+                  <option *ngFor="let billingCountryDTO of billingCountryDTOs" [value]="billingCountryDTO.TwoLetterIsoCode">
+                    {{billingCountryDTO.Name}}
+                  </option>
+                </select>
+              </div>            
+            </div>
+            <div class="pageSubTitle">
+              My Shipping Address
+              <div style="float: right;">
+                <a title="Expand" *ngIf="!ShowShippingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingAddress()"><i class="fa fa-plus"></i></a>
+                <a title="Collapse" *ngIf="ShowShippingAddress" style="cursor:pointer; margin: 5px;" (click)="DisplayShippingAddress()"><i class="fa fa-minus"></i></a>
+              </div>
+            </div>
+            <div *ngIf="ShowShippingAddress">
+              <div class="pageLabel">
+                <label class="container">Same as Billing Address
+                  <input name="ShippingSameAsBillingAddress"
+                  type="checkbox"
+                  [(ngModel)]="customerDTO.ShippingSameAsBillingAddress">
+                  <span class="checkmark"></span>       
+                </label>  
+              </div>
+              <div *ngIf="!customerDTO.ShippingSameAsBillingAddress">
+                <div class="pageLabel">Fistname:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingFirstName">
+                </div>
+                <div class="pageLabel">Lastname:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingLastName">
+                </div>
+                <div class="pageLabel">Company:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingCompany">
+                </div>
+                <div class="pageLabel">Address1:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingAddress1">
+                </div>
+                <div class="pageLabel">Address2:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingAddress2">
+                </div>
+                <div class="pageLabel">City:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingCity">
+                </div>
+                <div class="pageLabel">Zip/Postalcode:</div>  
+                <div class="pageLabel">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingZipPostalCode">
+                </div>    
+                <div class="pageLabel">State/Province:</div>  
+                <div class="pageLabel" *ngIf="shippingStateProvinceDTOs.length>0">
+                  <select 
+                        [(ngModel)]="customerDTO.ShippingStateProvinceCode">
+                    <option *ngFor="let shippingStateProvinceDTO of shippingStateProvinceDTOs" [value]="shippingStateProvinceDTO.Abbreviation">
+                      {{shippingStateProvinceDTO.Name}}
+                    </option>
+                  </select>
+                </div>
+                <div *ngIf="shippingStateProvinceDTOs.length==0">
+                  <input type="text" [(ngModel)]="customerDTO.ShippingStateProvince">
+                </div>
+                <div class="pageLabel">Country:</div>  
+                <div class="pageLabel">
+                  <select 
+                        (change)="selectShippingCountry()"
+                        [(ngModel)]="customerDTO.ShippingCountryCode">
+                    <option *ngFor="let shippingCountryDTO of shippingCountryDTOs" [value]="shippingCountryDTO.TwoLetterIsoCode">
+                      {{shippingCountryDTO.Name}}
+                    </option>
+                  </select>
+                </div>                 
+              </div>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="pageButton" (click)="UpdateMyDetails()">Update</button>
+            <button style="margin-left: 5px;" *ngIf="IsAdmin" class="pageButton" (click)="Cancel()">Cancel</button>
+          </div>
+          <div fxFlex.xs="0" fxFlex.sm="15" fxFlex.md="25" fxFlex.lg="35" fxFlex.xl="45"></div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

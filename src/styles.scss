@@ -1,0 +1,460 @@
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* You can add global styles to this file, and also import other style files */
+
+html, body { font-size: 13px; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;  min-height: 100%; }
+
+//Page
+.pageTitle {
+  font-size: 20px;
+  font-weight:bold;
+  margin-top: 20px;
+  border-bottom: solid 1px;
+  padding-bottom: 10px;
+}
+.pageSubTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 20px;
+  border-bottom: solid 1px;
+  padding-bottom: 10px;
+}
+.pageBody {
+  font-size: 14px;
+  color: rgba(0,0,0,.87);
+  margin-top: 10px;
+  line-height: 20px;
+}
+
+
+input[type=file]:focus {
+  background-color: gainsboro;
+}
+
+input[type=file] {
+  padding: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  width: 95%;
+  background-color: white;
+}
+
+input[type=file]:hover {
+  border: 2px solid lightblue;
+}
+
+
+input[type=text]:focus {
+  background-color: gainsboro;
+
+}
+input[type=text] {
+  padding: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  width: 95%;
+}
+input[type=text]:hover {
+  border: 2px solid lightblue;
+}
+input[type=password]:focus {
+  background-color: gainsboro;
+}
+
+input[type=password] {
+  padding: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  width: 95%;
+}
+input[type=password]:hover {
+  border: 2px solid lightblue;
+}
+input[type=number]:focus {
+  background-color: gainsboro;
+}
+
+input[type=number] {
+  padding: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  width: 100px;
+}
+input[type=number]:hover {
+  border: 2px solid lightblue;
+}
+
+
+input[type=date]:focus {
+  background-color: gainsboro;
+}
+
+input[type=date] {
+  padding: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  width: 150px;
+}
+input[type=date]:hover {
+  border: 2px solid lightblue;
+}
+
+textarea {
+  width: 95%;
+  height: 100px;
+}
+textarea:focus {
+  background-color: gainsboro;
+}
+
+input:invalid {
+  border: solid 2px red;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+select:hover {
+  border: 2px solid lightblue;
+}
+
+select {
+  display: inline-block;
+  box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 30px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: 2px solid lightgray;
+  border-radius: 4px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 15px top 1em, right 10px top 1em;
+  background-size: 5px 5px, 5px 5px;
+}
+
+.pageButton {
+  background-color: #3f51b5;
+  border: none;
+  color: white;
+  padding: 7px 20px;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pageButtonNavigation {
+  background-color: #3f51b5;
+  border: none;
+  color: white;
+  padding: 4px 20px;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+.pageLabel {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.pageLabelError {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: red;
+}
+
+.modalTitle {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 10px;
+  border-bottom: solid 1px;
+  padding: 10px;
+}
+
+.modalBody {
+  font-size: 13px;
+  margin: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.modal {
+  /* modal container fixed across whole screen */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+  /* z-index must be higher than .jw-modal-background */
+  z-index: 1000;
+  /* enables scrolling for tall modals */
+  overflow: auto;
+  padding: 20px;
+  background: #fff;
+  /* margin exposes part of the modal background */
+  margin: 40px;
+  border: outset 1px;
+  width: 300px;
+}
+
+.modal-background {
+  /* modal background fixed across whole screen */
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* semi-transparent black  */
+  background-color: #000;
+  opacity: 0.75;
+  /* z-index must be below .jw-modal and above everything else  */
+  z-index: 900;
+}
+//placeholder in red - begin
+
+//::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+//  color: red;
+//  opacity: 1; /* Firefox */
+//}
+
+//:-ms-input-placeholder { /* Internet Explorer 10-11 */
+//  color: red;
+//}
+
+//::-ms-input-placeholder { /* Microsoft Edge */
+//  color: red;
+//}
+//placeholder in red - end
+
+//custom checkbox - begin
+
+/* Customize the label (the container) */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #eee;
+  border: 1px solid lightgray;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #3f51b5;
+  border: 0;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 7px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkmarkGrid {
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  background-color: #eee;
+  border: 1px solid lightgray;
+  bottom: -10px;
+}
+
+.inputGrid {
+  width: 80% !important;
+
+}
+
+
+//custom checkbox - end
+
+  //spinner
+  .loader-block {
+    display: block;
+    position: absolute;
+    width: 200px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: calc(50% - 140px);
+    text-align: center;
+    z-index: 999;
+  }
+  // error message
+  .error-message {
+    color: #ff0000;
+    font-size: 11px;
+    position: absolute;
+    left: 16px;
+    top: 0;
+  }
+  //component - begin
+  .component-header {
+    padding: 0 26px 0;
+  }
+
+  .component-body {
+    padding: 0 26px 0;
+  }
+
+  .component-title {
+    margin: 10px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .component-table-title {
+    margin: 5px 0px 5px 0px;
+    font-weight: bold;
+  }
+
+.component-table-row {
+  align-items: flex-start;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  padding-top: 5px;
+  padding-left: 5px;
+  //word-break: break-all;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  /* Non standard for WebKit */
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+  // component - end
+  //forms
+  .text-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  .text-full-width {
+    width: 100%;
+  }
+  //Auto-Complete
+  .TableSearch {
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  .TableSearch:hover {
+    cursor: pointer;
+    background-color: lightgray;
+    font-weight: bold;
+  }
+  
+  //TAB - begin
+  /* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  font-weight: bold;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+.tabActive {
+  background-color: #3f51b5;
+  color: white;
+  font-weight: bold;
+}
+//TAB - end
+
+.Link:hover {
+  color: royalblue;
+  cursor:pointer;  
+}
+
+.ButtonLink {
+  color: #3f51b5;;
+  cursor:pointer;  
+  text-decoration: underline; 
+}
+
+.ButtonLink:hover {
+  color: royalblue;
+  cursor:pointer; 
+  text-decoration: underline; 
+}
+
+

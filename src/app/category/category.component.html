@@ -1,0 +1,114 @@
+<div fxFlex="100" style="margin: 10px;"> 
+  <div class="loader-block" *ngIf="ShowLoading">
+    <app-spinner></app-spinner>
+  </div>
+  <div *ngIf="!ShowLoading">
+    <div class="pageTitle">
+      Category Api
+    </div>
+    <div class="pageBody">
+
+        <div fxFlex="100" fxLayout.xs="column" fxLayout.gt-xs="row" fxFlexFill>
+          <div fxFlex.gt-xs="50" fxFlex.xs="100">
+            <div style="margin-right: 10px;" class="pageSubTitle">Category List</div>
+            <div>
+              <button style="margin: 10px;" class="pageButton" (click)="SelAddCategory()">Add New Category</button>
+            </div>
+            <div *ngIf="showCategoryLevelUp">
+              <button style="margin: 10px;" class="pageButton" (click)="SelUpCategory()">Category Level Up</button>
+            </div>
+            <div *ngIf="categoryDTOs.length!=0">
+              <div *ngFor="let categoryDTO of categoryDTOs">
+                <a title="Delete Category" style="cursor:pointer; margin: 5px;" (click)="DeleteCategory(categoryDTO)"><i class="fa fa-trash"></i></a>
+                <a title="Update Category" style="cursor:pointer; margin: 5px;" (click)="SelUpdateCategory(categoryDTO)"><i class="fa fa-pencil"></i></a>
+                <a title="Navigate to Sub Categories"style="cursor:pointer; margin: 5px;" (click)="SelSubCategories(categoryDTO)">{{categoryDTO.Name}}</a>
+              </div>
+            </div>
+            <div>
+              <div style="color: red;" *ngIf="categoryDTOs.length==0">No Category Found</div>
+            </div>
+          </div>
+          <div fxFlex.gt-xs="50" fxFlex.xs="100">
+            <div *ngIf="Mode!=''" fxLayout="column">
+              <div class="pageSubTitle">{{PageTitle}}</div>
+
+              <div *ngIf="selCategoryDTO.Id!=0" class="pageLabel">Id: {{selCategoryDTO.Id}}</div>  
+
+              <div class="pageLabel">Name:</div>  
+              <div class="pageLabel">
+                <input name="Name"
+                       type="text"
+                       [(ngModel)]="selCategoryDTO.Name">
+              </div>
+              
+              <div class="pageLabel">Description:</div>  
+              <div class="pageLabel">
+                <input name="Description"
+                       type="text"
+                       [(ngModel)]="selCategoryDTO.Description">
+              </div>
+
+              <div class="pageLabel">
+                  <label class="container">Published
+                    <input name="Published"
+                    type="checkbox"
+                    [(ngModel)]="selCategoryDTO.Published">
+                    <span class="checkmark"></span>       
+                  </label>   
+              </div>  
+              
+              <div class="pageLabel">DisplayOrder:</div>  
+              <div class="pageLabel">
+                <input name="DisplayOrder"
+                       type="number"
+                       [(ngModel)]="selCategoryDTO.DisplayOrder">
+              </div>   
+
+              <div class="pageLabel">Parent Category:</div> 
+              <div class="pageLabel">
+                <select 
+                      (change)="selectParentCategpry()"
+                      name="parentCategory"
+                      [(ngModel)]="selCategoryDTO.ParentCategoryId">
+                  <option value="0">None</option>
+                  <option *ngFor="let category of allCategoryDTOs" [value]="category.Id">
+                    {{category.Name}}
+                  </option>
+                </select>
+              </div>
+
+              <div class="pageLabel">Picture:</div>
+              <div *ngIf="selCategoryDTO.Picture.FileAsBase64" class="pageLabel"><img width="100px" height="100px;" alt="{{selCategoryDTO.Picture.AltAttribute}}" title="{{selCategoryDTO.Picture.TitleAttribute}}" src="{{selCategoryDTO.Picture.FileAsBase64}}" /></div>  
+              <div>
+                Upload a new Picture: 
+                <input style="cursor:pointer;" type="file" (change)="onFileChange($event)">
+              </div>
+              <div>
+                  Alt Attribute:<input name="AltAttribute" type="text" [(ngModel)]="selCategoryDTO.Picture.AltAttribute">
+              </div>
+              <div>
+                Title Attribute:<input name="TitleAttribute" type="text" [(ngModel)]="selCategoryDTO.Picture.TitleAttribute" /> 
+              </div>
+              <div>
+                <button *ngIf="!selCategoryDTO.Picture.FileAsBase64" class="pageButton" (click)="uploadPicture()">Upload Picture</button>
+                <button *ngIf="selCategoryDTO.Picture.FileAsBase64" class="pageButton" (click)="removePicture()">Remove Picture</button>
+              </div>
+              
+              <div *ngIf="selCategoryDTO.CreatedOnUtc" class="pageLabel">CreatedOnUtc: {{selCategoryDTO.CreatedOnUtc | date:'yyy-MM-dd'}}</div>  
+
+              <div *ngIf="selCategoryDTO.UpdatedOnUtc" class="pageLabel">UpdatedOnUtc: {{selCategoryDTO.UpdatedOnUtc | date:'yyy-MM-dd'}}</div>  
+
+              <div style="margin-top: 10px;">
+                <button *ngIf="Mode=='A'" style="margin-top: 10px;" class="pageButton" (click)="AddCategory()">Add New Category</button>
+                <button *ngIf="Mode=='U'" style="margin-top: 10px;" class="pageButton" (click)="UpdateCategory()">Update Category</button>
+              </div>
+    
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+

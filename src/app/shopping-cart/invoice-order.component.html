@@ -1,0 +1,128 @@
+<div style="margin: 0px;" fxLayout="row">
+   <div fxFlex="100" style="margin: 10px;">
+    <div fxLayout="column">
+      <div class="pageTitle">INVOICE</div>
+      <div class="loader-block" *ngIf="ShowLoading">
+        <app-spinner></app-spinner>
+      </div>
+      <div class="pageBody" *ngIf="!ShowLoading">
+
+                <div fxLayout.gt-xs="row" fxLayout.xs="column" fxLayoutAlign="space-around center">
+                  <!-- Billing Address - begin -->
+                  <div fxLayout="column">
+                    <div class="pageLabel">My Billing Address</div>
+                    <div class="pageBody">{{orderDTO.BillingFirstName}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingLastName}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingCompany}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingAddress1}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingAddress2}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingCity}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingZipPostalCode}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingStateProvince}}</div>  
+                    <div class="pageBody">{{orderDTO.BillingCountry}}</div>  
+                  </div>
+                  <!-- Billing Address - end -->
+
+                  <!-- Shipping Address - begin -->
+                  <div fxLayout="column">
+                    <div class="pageLabel">My Shipping Address</div>
+                    <div *ngIf="!orderDTO.ShippingSameAsBillingAddress">
+                      <div class="pageBody">{{orderDTO.ShippingFirstName}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingLastName}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingCompany}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingAddress1}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingAddress2}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingCity}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingZipPostalCode}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingStateProvince}}</div>  
+                      <div class="pageBody">{{orderDTO.ShippingCountry}}</div> 
+                    </div> 
+                    <div *ngIf="orderDTO.ShippingSameAsBillingAddress">
+                      Same as Billing Address.
+                    </div>
+                  </div>
+                  <!-- Shipping Address - end -->
+                </div>
+                <div style="margin-top: 5px;">
+                  <b>Order Ref:</b> {{orderDTO.CartId}}
+                </div>
+                <div><b>Order Date:</b> {{orderDTO.CreatedOnUtc | date:'yyyy-MM-dd'}}</div>
+                <div><b>Payment Method:</b> {{orderDTO.PaymentMethod}}</div>
+                <div style="border-bottom: darkgray solid 1px;" fxLayout="row" fxHide.xs="true" fxFlexFill>
+                  <div fxFlex="30" class="component-table-title">Product</div>
+                  <div fxFlex="10" class="component-table-title" style="text-align: right;">Qty</div>     
+                  <div fxFlex="10" class="component-table-title" style="text-align: right;">Unite Price</div>       
+                  <div *ngIf="orderDTO.TotalItemsDiscount>0" fxFlex="10" class="component-table-title" style="text-align: right;">Discount</div>    
+                  <div *ngIf="orderDTO.TotalTax>0" fxFlex="10" class="component-table-title" style="text-align: right;">Tax Rate</div>      
+                  <div *ngIf="orderDTO.TotalTax>0" fxFlex="15" class="component-table-title" style="text-align: right;">Sub Total (Excl. Tax)</div>    
+                  <div fxFlex="15" class="component-table-title" style="text-align: right;">Sub Total (Incl. Tax)</div>    
+                </div>
+
+              <div>
+                <div  *ngFor="let item of orderDTO.OrderItems"  fxLayout.gt-xs="row" fxLayout.xs="column" style="margin-top: 10px;">
+                    <div fxFlex.gt-xs="30" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Product:</b></div>
+                        <div>
+                            {{item.ProductName}} 
+                        </div>
+                        <div style="font-size: 12px;font-style: italic;">
+                            <span *ngIf="item.ProductAttributeDescriptions">[{{item.ProductAttributeDescriptions}}]</span>
+                        </div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Qty:</b></div>
+                        <div style="text-align: right;">{{item.Quantity}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Unit Price:</b></div>
+                        <div style="text-align: right;">{{item.UnitPrice | currency}}</div>
+                    </div>
+                    <div *ngIf="orderDTO.TotalItemsDiscount>0" fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Discount:</b></div>
+                        <div style="text-align: right;">{{item.DiscountAmount | currency}}</div>
+                    </div>
+                    <div *ngIf="orderDTO.TotalTax>0" fxFlex.gt-xs="10" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Tax Rate:</b></div>
+                        <div style="text-align: right;">{{item.TaxRate}}%</div>
+                    </div>
+                    <div *ngIf="orderDTO.TotalTax>0" fxFlex.gt-xs="15" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Excl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) | currency}}</div>
+                    </div>
+                    <div fxFlex.gt-xs="15" class="component-table-row">
+                        <div fxHide.gt-xs="true"><b>Sub Total (Incl. Tax):</b></div>
+                        <div style="text-align: right;">{{(item.Quantity * item.UnitPrice - item.DiscountAmount) * (1 + item.TaxRate / 100) | currency}}</div>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="end end">
+              <div class="pageBody">
+                <b>Total Product(s):</b> 
+                <div style="float: right;">{{orderDTO.TotalItems | currency}}</div>
+              </div>  
+              <div *ngIf="orderDTO.TotalTax>0" class="pageBody">
+                  <b>Total Tax:</b> 
+                  <div style="float: right;">{{orderDTO.TotalTax | currency}}</div>
+              </div>  
+              <div *ngIf="orderDTO.TotalItemsDiscount>0" class="pageBody">
+                  <b>Total Items Discount:</b>
+                  <div style="float: right;">{{orderDTO.TotalItemsDiscount | currency}}</div>  
+              </div>
+              <div class="pageBody">
+                  <b>Shipping Rate:</b> 
+                  <div style="float: right;">{{orderDTO.TotalShipping | currency}}</div>  
+              </div>
+              <div *ngIf="orderDTO.TotalOrderDiscount>0" class="pageBody">
+                <b>Total Order Discount:</b>
+                <div style="float: right;">{{orderDTO.TotalOrderDiscount | currency}}</div>  
+              </div>
+              <div class="pageBody">
+                  <b>Total to Pay:</b> 
+                  <div style="float: right;">{{orderDTO.TotalToPay | currency}}</div>  
+              </div>
+            </div>
+
+      </div>
+    </div>
+  </div>
+</div>
