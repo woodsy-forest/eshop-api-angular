@@ -5,13 +5,14 @@ eShop API provides a backend support to manage an online shop. Any Theme, Framew
 
 This demo uses the following features/components: 
 
-* Angular Universal
-* Lazy Loading
-* Angular Flex-Layout
-* Interseptor
-* Services
-* JSON Web Tokens (JWT)
-* ngx-PayPal.
+* Angular Universal --> SEO Friendly
+* Lazy Loading --> Faster Page Loading
+* Angular Flex-Layout --> Responsive Design
+* Angular Material -> Drag&Drop and Modal Popup Windows
+* Interseptor --> Centralised way to manage Outgoing Requests 
+* Services --> Reusable Components
+* JSON Web Tokens (JWT) --> Secure Transmission
+* ngx-PayPal --> PayPal Smart Payment Buttons
 
 ## Installation ##
 
