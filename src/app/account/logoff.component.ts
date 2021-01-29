@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../environments/environment';
+import { isPlatformServer } from '@angular/common';
 
 @Component({
     template: ''
@@ -8,7 +9,8 @@ import { environment } from '../../environments/environment';
 export class LogoffComponent  implements OnInit { 
 
 
-    constructor (private authService: AuthService) {
+    constructor (private authService: AuthService,
+        @Inject(PLATFORM_ID) private platformId: any) {
 
     }
 
@@ -20,7 +22,9 @@ export class LogoffComponent  implements OnInit {
             console.log("Logging off...")
         }
 
-        this.authService.logoff();
+        if (!isPlatformServer(this.platformId)) {
+            this.authService.logoff();
+        }
     }
 }
 
