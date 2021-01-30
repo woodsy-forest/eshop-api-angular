@@ -28,7 +28,7 @@ export class DiscountComponent  implements OnInit, OnDestroy {
     public search = new FormControl();
     public obSearch: Observable<any> = new Observable<any>();
     public pageSize: number = 1;
-    public currentPage: number = 1;
+    public currentPage: number = 10;
     public pagedDiscountDTO: PagedDiscountDTO = new PagedDiscountDTO();
     public PageTitle: string = '';
     public Mode: string = '';
