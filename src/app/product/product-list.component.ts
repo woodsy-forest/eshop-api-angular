@@ -46,7 +46,7 @@ export class ProductListComponent  implements OnInit, OnDestroy {
     public ShowLoading: boolean = false;
     public search = new FormControl();
     public obSearch: Observable<any> = new Observable<any>();
-    public pageSize: number = 1;
+    public pageSize: number = 10;
     public currentPage: number = 1;
     public categoryDTOs: CategoryDTO[] = [];
     public NavCategoryId: number = 0;
