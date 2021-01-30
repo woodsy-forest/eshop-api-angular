@@ -131,6 +131,20 @@ export class ShoppingCartComponent  implements OnInit, OnDestroy {
 
     }
 
+    var tmpTotalPay = Math.round((this.shoppingCartDTO.TotalToPay + Number.EPSILON) * 100) / 100;
+    var tmpTotalItems = Math.round((this.shoppingCartDTO.TotalItems + Number.EPSILON) * 100) / 100;
+    var tmpTotalTax = Math.round((this.shoppingCartDTO.TotalTax + Number.EPSILON) * 100) / 100;
+    var tmpTotalShipping = Math.round((this.shoppingCartDTO.TotalShipping + Number.EPSILON) * 100) / 100;
+    var tmpTotalDiscount = Math.round((this.shoppingCartDTO.TotalItemsDiscount +  this.shoppingCartDTO.TotalOrderDiscount + Number.EPSILON) * 100) / 100;
+
+    if (environment.debug_mode) {
+      console.log("shoppingCartDTO.TotalToPay: " + tmpTotalPay);
+      console.log("shoppingCartDTO.TotalItems: " + tmpTotalItems);
+      console.log("shoppingCartDTO.TotalTax: " + tmpTotalTax);
+      console.log("shoppingCartDTO.TotalShipping: " + tmpTotalShipping);
+      console.log("shoppingCartDTO.TotalDiscounts: " + tmpTotalDiscount);
+    }
+
     var cartId = this.shoppingCartCommonService.GetShoppingCartId();
 
     this.payPalConfig = {
@@ -143,23 +157,23 @@ export class ShoppingCartComponent  implements OnInit, OnDestroy {
             custom_id: cartId,
             amount: {
               currency_code: environment.paypal_currency,
-              value: String(this.shoppingCartDTO.TotalToPay),
+              value: String(tmpTotalPay),
               breakdown: {
                 item_total: {
                   currency_code: environment.paypal_currency,
-                  value: String(this.shoppingCartDTO.TotalItems)
+                  value: String(tmpTotalItems)
                 },
                 tax_total : {
                   currency_code: environment.paypal_currency,
-                  value: String(this.shoppingCartDTO.TotalTax)
+                  value: String(tmpTotalTax)
                 },
                 shipping  : {
                   currency_code: environment.paypal_currency,
-                  value: String(this.shoppingCartDTO.TotalShipping)
+                  value: String(tmpTotalShipping)
                 },
                 discount  : {
                   currency_code: environment.paypal_currency,
-                  value: String(this.shoppingCartDTO.TotalItemsDiscount + this.shoppingCartDTO.TotalOrderDiscount)
+                  value: String(tmpTotalDiscount)
                 },
               }
             },
