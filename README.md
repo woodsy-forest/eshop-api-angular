@@ -1,5 +1,10 @@
 # eshop-api-angular #
-This app in Angular 11 is only a demo to show how to call the eShop API.
+This app in Angular 11 is only a demo to show how to call the eShop API. 
+
+Online demo: http://luca888-001-site17.htempurl.com
+Admin Credentials:
+email: admin@yourstore.com
+password: admin
 
 eShop API provides a backend support to manage an online shop. Any Theme, Framework or Tool such as: Angular, React, .net Core or Postman can call them the manage an eshop.
 
